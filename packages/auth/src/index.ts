@@ -9,6 +9,9 @@ import { db, schema } from "@acme/db";
 
 import { env } from "../env";
 
+const getVkAuth = (callback = env.VK_CALLBACK) =>
+  new VK(env.VK_CLIENT_ID, env.VK_CLIENT_KEY, callback);
+
 const vkAuth = new VK(env.VK_CLIENT_ID, env.VK_CLIENT_KEY, env.VK_CALLBACK);
 
 const adapter = new DrizzlePostgreSQLAdapter(
@@ -19,6 +22,7 @@ const adapter = new DrizzlePostgreSQLAdapter(
 
 const lucia = new Lucia(adapter, {
   sessionCookie: {
+    name: "mvstr_lucia_session",
     // this sets cookies with super long expiration
     // since Next.js doesn't allow Lucia to extend cookie expiration when rendering pages
     expires: false,
@@ -93,4 +97,4 @@ const validateRequest = cache(
   },
 );
 
-export { Session, User, validateRequest, lucia, vkAuth };
+export { Session, User, validateRequest, lucia, vkAuth, getVkAuth };

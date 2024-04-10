@@ -7,6 +7,7 @@ export const env = createEnv({
     VK_CLIENT_KEY: z.string().min(1),
     VK_CLIENT_SECRET: z.string().min(1),
     VK_CALLBACK: z.string().min(1),
+    VK_CALLBACK_APP: z.string().min(1),
   },
   client: {},
   experimental__runtimeEnv: {},

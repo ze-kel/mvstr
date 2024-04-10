@@ -1,14 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
-import {
-  NeueMachinaRegular,
-  NeueMachinaUB,
-  Nunito400,
-  Nunito600,
-  Nunito700,
-} from "src/app/fonts/fonts";
 
 import { cn } from "@acme/ui";
 
+/*
 const TypographyTokens = {
   headingLAccent: NeueMachinaUB.className,
   headingL: NeueMachinaRegular.className,
@@ -28,6 +22,28 @@ const TypographyTokens = {
   captionM: Nunito700.className,
   linkLAccent: Nunito600.className,
   linkL: Nunito400.className,
+};
+*/
+
+const TypographyTokens = {
+  headingLAccent: "headingLAccent",
+  headingL: "headingL",
+  headingM: "headingM",
+  subHeadingL: "subHeadingL",
+  subHeadingM: "subHeadingM",
+  textXXL: "textXXL",
+  textXL: "textXL",
+  textLAccent: "textLAccent",
+  textL: "textL",
+  textM: "textM",
+  textSAccent: "textSAccent",
+  textS: "textS",
+  captionXXL: "captionXXL",
+  captionXL: "captionXL",
+  captionL: "captionL",
+  captionM: "captionM",
+  linkLAccent: "linkLAccent",
+  linkL: "linkL",
 };
 
 type TT = keyof typeof TypographyTokens;

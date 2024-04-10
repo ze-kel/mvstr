@@ -3,24 +3,24 @@ import { OAuth2RequestError } from "arctic";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 
-import { lucia, vkAuth } from "@acme/auth";
+import { getVkAuth, lucia } from "@acme/auth";
 import { db, schema } from "@acme/db";
 
 export async function GET(request: Request): Promise<Response> {
-  console.log("callback get");
-
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
+  const redirectTo = url.searchParams.get("customRedirect") ?? "/";
 
   const storedState = cookies().get("vk_oauth_state")?.value ?? null;
 
-  console.log("code", code, "state", state, "stored", storedState);
   if (!code || !state || !storedState || state !== storedState) {
     return new Response(null, {
       status: 400,
     });
   }
+
+  const vkAuth = getVkAuth();
 
   try {
     const tokens = await vkAuth.validateAuthorizationCode(code);
@@ -64,10 +64,11 @@ export async function GET(request: Request): Promise<Response> {
         sessionCookie.value,
         sessionCookie.attributes,
       );
+
       return new Response(null, {
         status: 302,
         headers: {
-          Location: "/app",
+          Location: redirectTo,
         },
       });
     }
@@ -91,10 +92,11 @@ export async function GET(request: Request): Promise<Response> {
       sessionCookie.value,
       sessionCookie.attributes,
     );
+
     return new Response(null, {
       status: 302,
       headers: {
-        Location: "/",
+        Location: redirectTo,
       },
     });
   } catch (e) {

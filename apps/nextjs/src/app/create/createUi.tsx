@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { format } from "date-fns";
 
+import type { RouterInputs } from "@acme/api";
 import { Button } from "@acme/ui/button";
 import { Calendar } from "@acme/ui/calendar";
 import { Input } from "@acme/ui/input";
@@ -35,7 +36,7 @@ const NumberInput = ({
   const [hours, setHours] = useState("");
   const [minute, setMinute] = useState("");
 
-  const trySubmit = (h, m) => {
+  const trySubmit = (h?: number, m?: number) => {
     if (typeof h === "number" && typeof m === "number") {
       onValidatedChange(h, m);
     } else if (typeof h === "number") {
@@ -113,7 +114,7 @@ const DateTimeInput = ({
 
         <Popover onOpenChange={setIsCalendarOpened} open={isCalendarOpened}>
           <PopoverTrigger asChild className="w-full cursor-pointer">
-            <div className="placeholderM  bg-buttons-secondary placeholder:text-text-tertiary focus:outline-text-secondary flex  w-full rounded-xl border border-neutral-200 px-4 py-3 text-lg outline-transparent transition-colors">
+            <div className="placeholderM  flex w-full rounded-xl border  border-neutral-200 bg-buttons-secondary px-4 py-3 text-lg outline-transparent transition-colors placeholder:text-text-tertiary focus:outline-text-secondary">
               {format(date, "dd.MM.yyyy")}
             </div>
           </PopoverTrigger>
@@ -123,6 +124,7 @@ const DateTimeInput = ({
               mode="single"
               selected={date}
               onSelect={(v) => {
+                if(!v) return
                 setDate(v);
                 setIsCalendarOpened(false);
                 onChange(v, time);
@@ -145,18 +147,19 @@ const DateTimeInput = ({
 
 export const CreateForm = ({
   initialState,
+  handleSave,
 }: {
-  initialState: NewEvent | DbEventSelect;
+  initialState: RouterInputs["events"]["create"];
+  handleSave: (v: RouterInputs["events"]["create"]) => Promise<void>;
 }) => {
-  const { mutateAsync } = UseCreateEventMutation();
-  const ref = useRef<NewEvent | DbEventSelect>({
+  const ref = useRef<RouterInputs["events"]["create"]>({
     name: "",
   });
 
   const saver = async () => {
     if (!ref.current.name) return;
 
-    await mutateAsync({ event: ref.current, redirect: true });
+    await handleSave(ref.current);
   };
 
   return (

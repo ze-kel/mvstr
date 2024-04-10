@@ -5,8 +5,9 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { ru } from "date-fns/locale";
 import { DayPicker } from "react-day-picker";
 
+import { buttonVariants } from "@acme/ui/button";
+
 import { cn } from "./";
-import { buttonVariants } from "./button.jsx";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -38,7 +39,7 @@ function Calendar({
         table: "w-full border-collapse mx-4 my-3",
         head_row: "flex",
         head_cell: cn(
-          "text-text-tertiary flex h-10 w-10 items-center justify-center rounded-md capitalize text-neutral-500",
+          "flex h-10 w-10 items-center justify-center rounded-md capitalize text-neutral-500 text-text-tertiary",
         ),
         row: "flex w-full mt-2",
         cell: cn(

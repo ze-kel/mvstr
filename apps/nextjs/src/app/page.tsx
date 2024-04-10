@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 
 import { validateRequest } from "@acme/auth";
 
+import { Sidebar } from "~/app/_components/sidebar";
 import { LogOut } from "~/app/login/auth";
-import { api } from "~/trpc/server";
 
 const Home = async () => {
   const r = await validateRequest();
@@ -12,19 +12,14 @@ const Home = async () => {
     redirect("/login");
   }
 
-  const ev = await api.events.all();
-
   return (
-    <div className="flex flex-col gap-4">
-      <div>Вы вошли {r.user ? r.user.id : ""}</div>
+    <div className={"flex flex-col gap-4"}>
+      <Sidebar />
+      <div>
+        {r.user.firstName} {r.user.lastName}
+      </div>
 
       <LogOut />
-      <div>{ev.length}</div>
-      <div>
-        {ev.map((v) => {
-          return <div>{JSON.stringify(v)}</div>;
-        })}
-      </div>
     </div>
   );
 };

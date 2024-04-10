@@ -1,7 +1,9 @@
-import { UseEventQuery } from "src/helpers/useQueries";
+"use client";
 
-const EventUi = ({ id }: { id: string }) => {
-  const { data } = UseEventQuery(id);
+import { api } from "~/trpc/react";
+
+export const EventUi = ({ id }: { id: string }) => {
+  const { data } = api.events.get.useQuery(id);
 
   return (
     <div>

@@ -1,11 +1,12 @@
-import { Sidebar } from "src/app/app/sidebar";
-import { EventProvider } from "src/providers/eventProvider";
+import { EventProvider } from "~/app/_components/eventProvider";
+import { Sidebar } from "~/app/_components/sidebar";
+import { EventUi } from "~/app/event/[id]/eventUi";
 
-const EventPage = async ({ params }: { params: { id: string } }) => {
+const EventPage = ({ params }: { params: { id: string } }) => {
   return (
     <EventProvider id={params.id}>
       <div className="flex">
-        <Sidebar />
+        <EventUi id={params.id} />
         <div>Event with id {params.id}</div>
       </div>
     </EventProvider>

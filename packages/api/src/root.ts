@@ -1,9 +1,7 @@
-import { authRouter } from "./router/auth";
 import { eventsRouter } from "./router/events";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
-  auth: authRouter,
   events: eventsRouter,
 });
 

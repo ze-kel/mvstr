@@ -1,10 +1,17 @@
+import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { generateState } from "arctic";
 
-import { vkAuth } from "@acme/auth";
+import { getVkAuth } from "@acme/auth";
 
-export async function GET(): Promise<Response> {
+export async function GET(req: NextRequest): Promise<Response> {
+  const reqUrl = new URL(req.url);
+  const customRedirect = reqUrl.searchParams.get("customRedirect");
+
   const state = generateState();
+
+  const vkAuth = getVkAuth(customRedirect ?? undefined);
+
   const url = await vkAuth.createAuthorizationURL(state);
 
   cookies().set("vk_oauth_state", state, {
