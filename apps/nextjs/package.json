@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm with-env next build",
     "clean": "git clean -xdf .next .turbo node_modules",
-    "dev": "pnpm with-env next dev",
+    "dev": "pnpm with-env next dev -p 80",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "start": "pnpm with-env next start",
@@ -40,7 +40,7 @@
     "@types/react": "^18.2.74",
     "@types/react-dom": "^18.2.24",
     "dotenv-cli": "^7.4.1",
-    "eslint": "^9.0.0",
+    "eslint": "^8.56.0",
     "jiti": "^1.21.0",
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.1",

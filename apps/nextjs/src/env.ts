@@ -15,10 +15,11 @@ export const env = createEnv({
    * This way you can ensure the app isn't built with invalid env vars.
    */
   server: {
-    DB_HOST: z.string(),
-    DB_NAME: z.string(),
-    DB_PASSWORD: z.string(),
-    DB_USERNAME: z.string(),
+    DATABASE_URL: z.string(),
+    VK_CLIENT_ID: z.string(),
+    VK_CLIENT_KEY: z.string(),
+    VK_CLIENT_SECRET: z.string(),
+    VK_CALLBACK: z.string(),
   },
 
   /**

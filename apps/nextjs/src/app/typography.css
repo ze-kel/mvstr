@@ -1,0 +1,126 @@
+.headingLAccent {
+  font-weight: 800;
+  font-size: 32px;
+  line-height: 38px;
+}
+.headingL {
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 38px;
+}
+
+.headingM {
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 38px;
+}
+
+.subHeadingL {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 20px;
+}
+
+.subHeadingM {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.textXXL {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.textXL {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.textLAccent {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.textL {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.textM {
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 14px;
+}
+
+.textSAccent {
+  font-weight: 700;
+  font-size: 8px;
+  line-height: 10px;
+}
+
+.textS {
+  font-weight: 600;
+  font-size: 8px;
+  line-height: 10px;
+}
+
+.captionXXL {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 22px;
+}
+.captionXL {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+}
+.captionL {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+}
+.captionM {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+.linkLAccent {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.linkLAccent {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+}
+
+.placeholderL {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 22px;
+}
+
+.placeholderLFocus {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.placeholderM {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.placeholderMFocus {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+}

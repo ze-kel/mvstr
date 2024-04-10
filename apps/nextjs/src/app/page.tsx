@@ -1,42 +1,32 @@
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
+import { validateRequest } from "@acme/auth";
+
+import { LogOut } from "~/app/login/auth";
 import { api } from "~/trpc/server";
-import { AuthShowcase } from "./_components/auth-showcase";
-import {
-  CreatePostForm,
-  PostCardSkeleton,
-  PostList,
-} from "./_components/posts";
 
-export const runtime = "edge";
+const Home = async () => {
+  const r = await validateRequest();
 
-export default function HomePage() {
-  // You can await this here if you don't want to show Suspense fallback below
-  const posts = api.post.all();
+  if (!r.user) {
+    redirect("/login");
+  }
+
+  const ev = await api.events.all();
 
   return (
-    <main className="container h-screen py-16">
-      <div className="flex flex-col items-center justify-center gap-4">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-primary">T3</span> Turbo
-        </h1>
-        <AuthShowcase />
+    <div className="flex flex-col gap-4">
+      <div>Вы вошли {r.user ? r.user.id : ""}</div>
 
-        <CreatePostForm />
-        <div className="w-full max-w-2xl overflow-y-scroll">
-          <Suspense
-            fallback={
-              <div className="flex w-full flex-col gap-4">
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-              </div>
-            }
-          >
-            <PostList posts={posts} />
-          </Suspense>
-        </div>
+      <LogOut />
+      <div>{ev.length}</div>
+      <div>
+        {ev.map((v) => {
+          return <div>{JSON.stringify(v)}</div>;
+        })}
       </div>
-    </main>
+    </div>
   );
-}
+};
+
+export default Home;

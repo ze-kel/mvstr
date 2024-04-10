@@ -1,16 +1,43 @@
-import { Client } from "@planetscale/database";
-import { drizzle } from "drizzle-orm/planetscale-serverless";
+import { createEnv } from "@t3-oss/env-core";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { Pool } from "pg";
+import * as z from "zod";
 
-import { connectionStr } from "./config";
-import * as auth from "./schema/auth";
-import * as post from "./schema/post";
+import {
+  eventTable,
+  guestsTable,
+  sessionTable,
+  testTable,
+  userTable,
+} from "./schema";
 
-export const schema = { ...auth, ...post };
+export * from "drizzle-orm";
 
-export { mySqlTable as tableCreator } from "./schema/_table";
+const env = createEnv({
+  server: {
+    DATABASE_URL: z.string(),
+  },
+  runtimeEnv: process.env,
+  emptyStringAsUndefined: true,
+});
 
-export * from "drizzle-orm/expressions";
+const schema = {
+  userTable,
+  sessionTable,
+  eventTable,
+  testTable,
+  guestsTable,
+};
 
-const psClient = new Client({ url: connectionStr.href });
+const pool = new Pool({
+  connectionString: env.DATABASE_URL,
+});
 
-export const db = drizzle(psClient, { schema });
+const db = drizzle(pool, { schema });
+
+if (process.env.MIGRATE === "true") {
+  void migrate(db, { migrationsFolder: "./drizzle" });
+}
+
+export { pool, db, schema };

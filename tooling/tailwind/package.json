@@ -23,7 +23,7 @@
     "@acme/eslint-config": "*",
     "@acme/prettier-config": "*",
     "@acme/tsconfig": "*",
-    "eslint": "^9.0.0",
+    "eslint": "^8.56.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.4"
   },

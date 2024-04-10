@@ -42,9 +42,9 @@
   },
   "globalEnv": [
     "DATABASE_URL",
-    "AUTH_DISCORD_ID",
-    "AUTH_DISCORD_SECRET",
-    "AUTH_REDIRECT_PROXY_URL",
-    "AUTH_SECRET"
+    "VK_CLIENT_ID",
+    "VK_CLIENT_KEY",
+    "VK_CLIENT_SECRET",
+    "VK_CALLBACK"
   ]
 }

@@ -24,13 +24,15 @@
     "@acme/validators": "*",
     "@trpc/server": "11.0.0-next.320",
     "superjson": "2.2.1",
+    "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@acme/eslint-config": "*",
     "@acme/prettier-config": "*",
     "@acme/tsconfig": "*",
-    "eslint": "^9.0.0",
+    "@types/uuid": "^9.0.8",
+    "eslint": "^8.56.0",
     "prettier": "^3.2.5",
     "typescript": "^5.4.4"
   },
