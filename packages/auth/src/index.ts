@@ -9,9 +9,6 @@ import { db, schema } from "@acme/db";
 
 import { env } from "../env";
 
-const getVkAuth = (callback = env.VK_CALLBACK) =>
-  new VK(env.VK_CLIENT_ID, env.VK_CLIENT_KEY, callback);
-
 const vkAuth = new VK(env.VK_CLIENT_ID, env.VK_CLIENT_KEY, env.VK_CALLBACK);
 
 const adapter = new DrizzlePostgreSQLAdapter(
@@ -97,4 +94,4 @@ const validateRequest = cache(
   },
 );
 
-export { Session, User, validateRequest, lucia, vkAuth, getVkAuth };
+export { Session, User, validateRequest, lucia, vkAuth };

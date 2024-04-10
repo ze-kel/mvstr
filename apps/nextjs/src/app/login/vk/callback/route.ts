@@ -3,24 +3,22 @@ import { OAuth2RequestError } from "arctic";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 
-import { getVkAuth, lucia } from "@acme/auth";
+import { lucia, vkAuth } from "@acme/auth";
 import { db, schema } from "@acme/db";
 
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
-  const redirectTo = url.searchParams.get("customRedirect") ?? "/";
 
   const storedState = cookies().get("vk_oauth_state")?.value ?? null;
+  const redirectTo = cookies().get("vk_custom_redirect")?.value ?? "/";
 
   if (!code || !state || !storedState || state !== storedState) {
     return new Response(null, {
       status: 400,
     });
   }
-
-  const vkAuth = getVkAuth();
 
   try {
     const tokens = await vkAuth.validateAuthorizationCode(code);

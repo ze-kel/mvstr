@@ -6,13 +6,14 @@ import * as WebBrowser from "expo-web-browser";
 
 import { getBaseUrl } from "~/utils/api";
 
-const fullUrl = getBaseUrl() + `/login/vk?return=true`;
+const fullUrl = "https://mvstr.vercel.app" + `/login/vk?return=true`;
 
 const LoginWithVk = ({ onToken }: { onToken: (v: string) => void }) => {
   const handlePress = async () => {
     try {
       const fullUrl =
-        getBaseUrl() + `/login/vk?return=${Linking.createURL("/?")}`;
+        "https://mvstr.vercel.app" +
+        `/login/vk?customRedirect=${Linking.createURL("/?")}`;
 
       const result = await WebBrowser.openAuthSessionAsync(fullUrl);
       let redirectData;
