@@ -16,10 +16,6 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z.string(),
-    VK_CLIENT_ID: z.string(),
-    VK_CLIENT_KEY: z.string(),
-    VK_CLIENT_SECRET: z.string(),
-    VK_CALLBACK: z.string(),
   },
 
   /**

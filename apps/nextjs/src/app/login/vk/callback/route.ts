@@ -3,56 +3,103 @@ import { OAuth2RequestError } from "arctic";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 
-import { lucia, vkAuth } from "@acme/auth";
+import { lucia } from "@acme/auth";
 import { db, schema } from "@acme/db";
+
+import { env } from "~/env";
+
+const getMoreInfo = async (token: string) => {
+  const res = await fetch(
+    "https://api.vk.com/method/account.getProfileInfo?v=5.199",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  const { response } = await res.json();
+
+  const { id, bdate, first_name, last_name, photo_200 } = response as {
+    id: string;
+    bdate: string;
+    first_name: string;
+    last_name: string;
+    photo_200: string;
+  };
+
+  return { id, bdate, first_name, last_name, photo_200 };
+};
 
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
-  const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state");
 
   const storedState = cookies().get("vk_oauth_state")?.value ?? null;
-  const redirectTo = cookies().get("vk_custom_redirect")?.value ?? "/";
 
-  if (!code || !state || !storedState || state !== storedState) {
+  const payload = url.searchParams.get("payload");
+  const redirectTo = url.searchParams.get("state") ?? "/";
+
+  if (!payload) {
     return new Response(null, {
       status: 400,
     });
   }
 
   try {
-    const tokens = await vkAuth.validateAuthorizationCode(code);
+    const d = JSON.parse(payload) as {
+      type: string;
+      auth: 1 | 0;
+      token: string;
+      uuid: string;
+    };
+
+    if (d.uuid !== storedState) {
+      return new Response(null, {
+        status: 400,
+      });
+    }
 
     const res = await fetch(
-      "https://api.vk.com/method/account.getProfileInfo?v=5.199",
-      {
-        headers: {
-          Authorization: `Bearer ${tokens.accessToken}`,
-        },
-      },
+      `https://api.vk.com/method/auth.exchangeSilentAuthToken?v=5.131&token=${d.token}&access_token=${env.VK_CLIENT_SECRET}&uuid=${d.uuid}`,
     );
 
     const { response } = await res.json();
 
-    const { id, bdate, first_name, last_name, photo_200 } = response as {
-      id: string;
-      bdate: string;
-      first_name: string;
-      last_name: string;
-      photo_200: string;
+    const { user_id, access_token, phone, email } = response as {
+      user_id: string;
+      access_token: string;
+      phone: string;
+      email: string;
     };
 
+    const { bdate, first_name, last_name, photo_200 } =
+      await getMoreInfo(access_token);
+
     const existingUser = await db.query.userTable.findFirst({
-      where: eq(schema.userTable.vkId, id),
+      where: eq(schema.userTable.vkId, user_id),
     });
 
     if (existingUser) {
+      console.log({
+        birthdayVk: bdate,
+        firstName: first_name,
+        lastName: last_name,
+        profileImage: photo_200,
+        vkConnected: true,
+        vkAccessToken: access_token,
+        phone,
+        email,
+      });
+
       await db.update(schema.userTable).set({
         birthdayVk: bdate,
         firstName: first_name,
         lastName: last_name,
         profileImage: photo_200,
         vkConnected: true,
+        vkAccessToken: access_token,
+        phone,
+        email,
       });
 
       const session = await lucia.createSession(existingUser.id, {});
@@ -75,12 +122,15 @@ export async function GET(request: Request): Promise<Response> {
 
     await db.insert(schema.userTable).values({
       id: userId,
-      vkId: id,
+      vkId: user_id,
       birthdayVk: bdate,
       firstName: first_name,
       lastName: last_name,
       profileImage: photo_200,
       vkConnected: true,
+      vkAccessToken: access_token,
+      phone,
+      email,
     });
 
     const session = await lucia.createSession(userId, {});

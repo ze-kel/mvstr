@@ -11,7 +11,8 @@ export const userTable = pgTable("user", {
   lastName: text("last_name"),
   profileImage: text("profile_image"),
   birthdayVk: text("birthday_vk"),
-  vkConnected: boolean("vkConnected"),
+  vkConnected: boolean("vk_connected"),
+  vkAccessToken: text("vk_token"),
 });
 
 export const sessionTable = pgTable("session", {

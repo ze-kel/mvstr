@@ -14,7 +14,7 @@ import {
 
 export * from "drizzle-orm";
 
-const env = createEnv({
+export const env = createEnv({
   server: {
     DATABASE_URL: z.string(),
   },
