@@ -8,6 +8,8 @@ import superjson from "superjson";
 
 import type { AppRouter } from "@acme/api";
 
+import { getAuthToken } from "~/utils/auth";
+
 /**
  * A set of typesafe hooks for consuming your API.
  */
@@ -58,7 +60,7 @@ export function TRPCProvider(props: { children: React.ReactNode }) {
           transformer: superjson,
           url: `${getBaseUrl()}/api/trpc`,
           headers() {
-            const token = SecureStore.getItem("auth_session_id");
+            const token = getAuthToken();
             //const token = "zrburx0v5vivqdgd29s4bma6e3iqu0fbo3s95fbp";
             const headers = new Headers();
             headers.set("x-trpc-source", "expo-react");

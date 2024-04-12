@@ -3,27 +3,34 @@ import { Button, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Link,
+  Redirect,
   Stack,
   useGlobalSearchParams,
   useLocalSearchParams,
+  useRootNavigationState,
   useRouter,
 } from "expo-router";
 import { TRPCClientError } from "@trpc/client";
 
 import { api } from "~/utils/api";
+import { clearAuthTOken, getAuthToken } from "~/utils/auth";
 
 export default function Index() {
+  const rootNavigationState = useRootNavigationState();
+  const token = getAuthToken();
+
   const { data, error } = api.events.list.useQuery();
 
-  const params = useLocalSearchParams<{ authToken: string }>();
-  const p2 = useGlobalSearchParams();
-
-  const router = useRouter();
-  useEffect(() => {
-    if (error instanceof TRPCClientError && error.message === "UNAUTHORIZED") {
-      //router.replace("/login/");
+  if (rootNavigationState.key) {
+    if (!token) {
+      return <Redirect href={"/login/"} />;
     }
-  }, [error]);
+
+    if (error instanceof TRPCClientError && error.message === "UNAUTHORIZED") {
+      clearAuthTOken();
+      return <Redirect href={"/login/"} />;
+    }
+  }
 
   return (
     <SafeAreaView className="bg-background">
@@ -31,11 +38,10 @@ export default function Index() {
       <Stack.Screen options={{ title: "Home Page" }} />
       <View className="bg-background h-full w-full p-4">
         <Text className="text-foreground pb-2 text-center text-5xl font-bold">
-          Main page with data
+          Main page with data {token}
         </Text>
 
         <Link href={"/login/"}>авторизация</Link>
-        <Link href={"/login2/"}>авторизация2</Link>
 
         {data?.map((v) => {
           return (

@@ -37,7 +37,6 @@ export async function GET(request: Request): Promise<Response> {
   const storedState = cookies().get("vk_oauth_state")?.value ?? null;
 
   const payload = url.searchParams.get("payload");
-  const redirectTo = url.searchParams.get("state") ?? "/";
 
   if (!payload) {
     return new Response(null, {
@@ -110,6 +109,10 @@ export async function GET(request: Request): Promise<Response> {
         sessionCookie.attributes,
       );
 
+      const redirectTo = url.searchParams.get("state")
+        ? url.searchParams.get("state") + session.id
+        : "/";
+
       return new Response(null, {
         status: 302,
         headers: {
@@ -140,6 +143,10 @@ export async function GET(request: Request): Promise<Response> {
       sessionCookie.value,
       sessionCookie.attributes,
     );
+
+    const redirectTo = url.searchParams.get("state")
+      ? url.searchParams.get("state") + session.id
+      : "/";
 
     return new Response(null, {
       status: 302,

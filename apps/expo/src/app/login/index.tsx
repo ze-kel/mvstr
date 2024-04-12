@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Button, SafeAreaView, Text, View } from "react-native";
 import * as Linking from "expo-linking";
-import { Stack } from "expo-router";
+import { Redirect, Stack, useRootNavigationState } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 
-import { getBaseUrl } from "~/utils/api";
-
-const fullUrl = "https://mvstr.vercel.app" + `/login/vk?return=true`;
+import { getAuthToken, setAuthToken } from "~/utils/auth";
 
 const LoginWithVk = ({ onToken }: { onToken: (v: string) => void }) => {
   const handlePress = async () => {
@@ -21,6 +19,8 @@ const LoginWithVk = ({ onToken }: { onToken: (v: string) => void }) => {
         redirectData = Linking.parse(result.url);
       }
 
+      console.log("redirData", redirectData);
+      console.log("url", result.url);
       onToken(result.url);
     } catch (error) {
       console.log(error);
@@ -31,7 +31,10 @@ const LoginWithVk = ({ onToken }: { onToken: (v: string) => void }) => {
 };
 
 export default function Index() {
-  const [token, setToken] = useState("");
+  const rootNavigationState = useRootNavigationState();
+  const token = getAuthToken();
+
+  if (rootNavigationState && token) return <Redirect href={"/"} />;
 
   return (
     <SafeAreaView className="bg-background">
@@ -42,7 +45,11 @@ export default function Index() {
           Please login
         </Text>
         <Text>token {token}</Text>
-        <LoginWithVk onToken={setToken} />
+        <LoginWithVk
+          onToken={(v) => {
+            console.log(v);
+          }}
+        />
       </View>
     </SafeAreaView>
   );
