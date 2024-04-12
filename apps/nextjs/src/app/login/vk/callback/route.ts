@@ -3,10 +3,17 @@ import { OAuth2RequestError } from "arctic";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 
+import type { Session } from "@acme/auth";
 import { lucia } from "@acme/auth";
 import { db, schema } from "@acme/db";
 
 import { env } from "~/env";
+
+const getRedirect = (url: URL, session: Session) => {
+  return url.searchParams.get("state")
+    ? url.searchParams.get("state") + `token=${session.id}`
+    : "/";
+};
 
 const getMoreInfo = async (token: string) => {
   const res = await fetch(
@@ -110,13 +117,13 @@ export async function GET(request: Request): Promise<Response> {
       );
 
       const redirectTo = url.searchParams.get("state")
-        ? url.searchParams.get("state") + session.id
+        ? url.searchParams.get("state") + `token=${session.id}`
         : "/";
 
       return new Response(null, {
         status: 302,
         headers: {
-          Location: redirectTo,
+          Location: getRedirect(url, session),
         },
       });
     }
@@ -145,13 +152,13 @@ export async function GET(request: Request): Promise<Response> {
     );
 
     const redirectTo = url.searchParams.get("state")
-      ? url.searchParams.get("state") + session.id
+      ? url.searchParams.get("state") + `token=${session.id}`
       : "/";
 
     return new Response(null, {
       status: 302,
       headers: {
-        Location: redirectTo,
+        Location: getRedirect(url, session),
       },
     });
   } catch (e) {
