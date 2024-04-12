@@ -34,5 +34,8 @@
     "apps/*",
     "packages/*",
     "tooling/*"
-  ]
+  ],
+  "dependencies": {
+    "expo-linear-gradient": "~12.7.2"
+  }
 }

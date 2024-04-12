@@ -8,7 +8,7 @@ import {
   eventTable,
   guestsTable,
   sessionTable,
-  testTable,
+  taskTable,
   userTable,
 } from "./schema";
 
@@ -26,8 +26,8 @@ const schema = {
   userTable,
   sessionTable,
   eventTable,
-  testTable,
   guestsTable,
+  taskTable,
 };
 
 const pool = new Pool({

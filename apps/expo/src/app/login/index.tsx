@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useState } from "react";
 import { Button, SafeAreaView, Text, View } from "react-native";
 import * as Linking from "expo-linking";
@@ -13,15 +17,22 @@ const LoginWithVk = ({ onToken }: { onToken: (v: string) => void }) => {
         "https://mvstr.vercel.app" +
         `/login/vk?customRedirect=${Linking.createURL("/?")}`;
 
-      const result = await WebBrowser.openAuthSessionAsync(fullUrl);
-      let redirectData;
-      if (result.url) {
-        redirectData = Linking.parse(result.url);
-      }
+      const result = (await WebBrowser.openAuthSessionAsync(
+        fullUrl,
+      )) as WebBrowser.WebBrowserAuthSessionResult;
 
-      console.log("redirData", redirectData);
-      console.log("url", result.url);
-      onToken(result.url);
+      console.log("result", result);
+
+      if (result.type === "success") {
+        const redirectData = Linking.parse(result.url);
+
+        if (redirectData.queryParams) {
+          const token = redirectData.queryParams.token;
+          if (typeof token === "string") {
+            onToken(token);
+          }
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -34,20 +45,26 @@ export default function Index() {
   const rootNavigationState = useRootNavigationState();
   const token = getAuthToken();
 
-  if (rootNavigationState && token) return <Redirect href={"/"} />;
+  const [_, setKey] = useState(1);
+
+  if (rootNavigationState.key && token) return <Redirect href={"/"} />;
 
   return (
-    <SafeAreaView className="bg-background">
+    <SafeAreaView className="bg-surface-secondary">
       {/* Changes page title visible on the header */}
       <Stack.Screen options={{ title: "Home Page" }} />
-      <View className="bg-background h-full w-full p-4">
-        <Text className="text-foreground pb-2 text-center text-5xl font-bold">
+      <View className="h-full w-full bg-surface-secondary p-4">
+        <Text
+          className="text-foreground pb-2 text-center text-5xl font-bold"
+          style={{ fontFamily: "NeueMachina-Light" }}
+        >
           Please login
         </Text>
         <Text>token {token}</Text>
         <LoginWithVk
           onToken={(v) => {
-            console.log(v);
+            setAuthToken(v);
+            setKey((v) => v + 1);
           }}
         />
       </View>

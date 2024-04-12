@@ -1,3 +1,4 @@
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { boolean, pgTableCreator, text, timestamp } from "drizzle-orm/pg-core";
 
 const pgTable = pgTableCreator((name) => `PBXKK_${name}`);
@@ -26,9 +27,19 @@ export const sessionTable = pgTable("session", {
   }).notNull(),
 });
 
-export const testTable = pgTable("test", {
+export const taskTable = pgTable("tasks", {
+  eventId: text("id")
+    .notNull()
+    .references(() => eventTable.id),
+  userId: text("userId")
+    .notNull()
+    .references(() => userTable.id),
   id: text("id").primaryKey(),
-  value: text("value"),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  time: timestamp("time"),
+  completed: boolean("completed"),
+  parentId: text("parent_id").references((): AnyPgColumn => taskTable.id),
 });
 
 export const eventTable = pgTable("events", {

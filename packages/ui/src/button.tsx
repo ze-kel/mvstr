@@ -11,11 +11,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-buttons-primary text-text-inverse hover:bg-buttons-hover-primary stroke stroke-buttons-primary hover:border-buttons-hover-primary",
+          "stroke bg-buttons-primary stroke-buttons-primary text-text-inverse hover:border-buttons-hover-primary hover:bg-buttons-hover-primary",
         secondary:
-          "bg-buttons-secondary hover:bg-buttons-hover-secondary border-buttons-secondary hover:border-buttons-hover-secondary",
+          "border-buttons-secondary bg-buttons-secondary hover:border-buttons-hover-secondary hover:bg-buttons-hover-secondary",
         inverse:
-          "bg-buttons-inverse hover:bg-buttons-hover-inverse border-buttons-inverse hover:border-buttons-hover-inverse",
+          "border-buttons-inverse bg-buttons-inverse hover:border-buttons-hover-inverse hover:bg-buttons-hover-inverse",
         stroke: "border-stroke-secondary hover:bg-button-hover-stroke",
       },
       size: {

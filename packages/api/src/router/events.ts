@@ -18,6 +18,7 @@ export const ZNewEvent = z.object({
 });
 
 export type INewEvent = z.infer<typeof ZNewEvent>;
+export type IEvent = typeof schema.eventTable.$inferSelect;
 
 export const ZEventUpdate = ZNewEvent.partial();
 
