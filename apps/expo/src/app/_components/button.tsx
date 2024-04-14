@@ -45,6 +45,7 @@ const buttonVariants = cva(
         m: "captionXL rounded-[12px] px-6 py-3",
         s: "captionL rounded-[10px] px-[18px] py-[9px]",
         xs: "captionM rounded-[8px] px-3 py-1.5",
+        sIcon: "h-[36px] w-[36px] rounded-[10px]",
       },
     },
     defaultVariants: {
@@ -56,10 +57,12 @@ const buttonVariants = cva(
 
 interface ButtonProps
   extends PressableProps,
-    VariantProps<typeof buttonVariants> {}
+    VariantProps<typeof buttonVariants> {
+  icon?: boolean;
+}
 
 const Button = React.forwardRef<Pressable, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => {
+  ({ className, variant, size, children, icon, ...props }, ref) => {
     return (
       <Pressable
         className={cn(buttonVariants({ variant, size, className }), className)}
@@ -67,9 +70,11 @@ const Button = React.forwardRef<Pressable, ButtonProps>(
         ref={ref}
         {...props}
       >
-        <Text className={textVariants({ variant, size })}>
-          {props.children}
-        </Text>
+        {icon ? (
+          children
+        ) : (
+          <Text className={textVariants({ variant, size })}>{children}</Text>
+        )}
       </Pressable>
     );
   },

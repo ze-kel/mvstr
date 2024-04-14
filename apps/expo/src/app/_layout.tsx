@@ -39,9 +39,7 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: "rgba(243, 245, 247, 1)" },
           contentStyle: { backgroundColor: "rgba(243, 245, 247, 1)" },
         }}
-      >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
+      ></Stack>
       <StatusBar translucent={false} style="dark" />
     </TRPCProvider>
   );

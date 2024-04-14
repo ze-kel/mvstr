@@ -1,15 +1,17 @@
 import type { SvgProps } from "react-native-svg";
-import { FlatList, Image, Text, View } from "react-native";
+import { useState } from "react";
+import { FlatList, Image, Modal, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { ClipPath, Defs, G, Path } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
-import { Redirect, Stack, useRootNavigationState } from "expo-router";
+import { Link, Redirect, Stack, useRootNavigationState } from "expo-router";
 import { TRPCClientError } from "@trpc/client";
 import { format, isToday, setDefaultOptions } from "date-fns";
 import { ru } from "date-fns/locale";
 
 import type { IEvent, IUser } from "@acme/api";
 
+import { Button } from "~/app/_components/button";
 import { api } from "~/utils/api";
 import { clearAuthTOken, getAuthToken } from "~/utils/auth";
 
@@ -32,29 +34,40 @@ const EventItem = ({ event }: { event: IEvent }) => {
   const today = event.date && isToday(event.date);
 
   return (
-    <View className="px-4">
-      <View className="mt-2 flex flex-row items-center rounded-xl bg-surface-secondary p-3">
-        <View className="mt-2 h-11 w-11"></View>
-        <View className="flex flex-col gap-1.5">
-          <Text className="subHeadingL">{event.name}</Text>
-          <View className="flex flex-row items-center gap-1">
-            <IconCalendar
-              fill={today ? "rgba(33, 186, 114, 1)" : "rgba(86, 58, 220, 1)"}
-            />
-            <Text
-              style={{
-                fontFamily: "Nunito-Bold",
-                fontSize: 10,
-                lineHeight: 14,
-                color: today ? "rgba(33, 186, 114, 1)" : "rgba(86, 58, 220, 1)",
-              }}
-            >
-              {event.date ? format(event.date, "d MMMM") : "Без даты"}
-            </Text>
+    <Link
+      href={{ pathname: "/event/[eventId]", params: { eventId: event.id } }}
+      asChild
+    >
+      <Pressable>
+        <View className="px-4">
+          <View className="mt-2 flex flex-row items-center rounded-xl bg-surface-secondary p-3">
+            <View className="mt-2 h-11 w-11"></View>
+            <View className="flex flex-col gap-1.5">
+              <Text className="subHeadingL">{event.name}</Text>
+              <View className="flex flex-row items-center gap-1">
+                <IconCalendar
+                  fill={
+                    today ? "rgba(33, 186, 114, 1)" : "rgba(86, 58, 220, 1)"
+                  }
+                />
+                <Text
+                  style={{
+                    fontFamily: "Nunito-Bold",
+                    fontSize: 10,
+                    lineHeight: 14,
+                    color: today
+                      ? "rgba(33, 186, 114, 1)"
+                      : "rgba(86, 58, 220, 1)",
+                  }}
+                >
+                  {event.date ? format(event.date, "d MMMM") : "Без даты"}
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
-      </View>
-    </View>
+      </Pressable>
+    </Link>
   );
 };
 
@@ -78,6 +91,8 @@ export default function Index() {
   const { data, error } = api.events.list.useQuery();
 
   const u = api.user.getMe.useQuery();
+
+  const [isModal, setModal] = useState(false);
 
   if (rootNavigationState.key) {
     if (!token) {
@@ -110,7 +125,7 @@ export default function Index() {
           <View className="flex flex-row items-center justify-between px-[16px]">
             <View className="flex flex-row items-center gap-2">
               <Image
-                source={require("../../../assets/logo.png")}
+                source={require("../../assets/logo.png")}
                 style={{ width: 36, resizeMode: "contain", display: "flex" }}
               />
               <Text

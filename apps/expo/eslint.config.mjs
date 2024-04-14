@@ -7,5 +7,4 @@ export default [
     ignores: [".expo/**", "expo-plugins/**"],
   },
   ...baseConfig,
-  ...reactConfig,
 ];

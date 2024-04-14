@@ -28,6 +28,7 @@ export default {
         "green-1": "rgba(9, 255, 75, 1)",
         "surface-inverse": "rgba(254, 254, 254, 1)",
         "stroke-secondary": "rgba(236, 236, 236, 1)",
+        "surface-action": "rgba(236, 236, 255, 1)",
         "surface-secondary": "rgba(243, 245, 247, 1)",
         "sroke-state-disable": "rgba(232, 236, 239, 1)",
         "icons-tertiary": "rgba(61, 56, 73, 1)",

@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useState } from "react";
-import { Button, SafeAreaView, Text, View } from "react-native";
+import { SafeAreaView, Text, View } from "react-native";
 import * as Linking from "expo-linking";
 import { Redirect, Stack, useRootNavigationState } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 
+import { Button } from "~/app/_components/button";
+import { Input } from "~/app/_components/input";
 import { getAuthToken, setAuthToken } from "~/utils/auth";
 
 const LoginWithVk = ({ onToken }: { onToken: (v: string) => void }) => {
@@ -17,9 +15,7 @@ const LoginWithVk = ({ onToken }: { onToken: (v: string) => void }) => {
         "https://mvstr.vercel.app" +
         `/login/vk?customRedirect=${Linking.createURL("/?")}`;
 
-      const result = (await WebBrowser.openAuthSessionAsync(
-        fullUrl,
-      )) as WebBrowser.WebBrowserAuthSessionResult;
+      const result = await WebBrowser.openAuthSessionAsync(fullUrl);
 
       console.log("result", result);
 
@@ -47,6 +43,8 @@ export default function Index() {
 
   const [_, setKey] = useState(1);
 
+  const [ttt, setTttt] = useState("");
+
   if (rootNavigationState.key && token) return <Redirect href={"/"} />;
 
   return (
@@ -67,6 +65,15 @@ export default function Index() {
             setKey((v) => v + 1);
           }}
         />
+        <Input value={ttt} onChangeText={setTttt} placeholder="123" />
+        <Button
+          onPress={() => {
+            setAuthToken(ttt);
+            setKey((v) => v + 1);
+          }}
+        >
+          Выставить токен
+        </Button>
       </View>
     </SafeAreaView>
   );

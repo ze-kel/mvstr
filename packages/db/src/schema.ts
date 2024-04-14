@@ -28,13 +28,13 @@ export const sessionTable = pgTable("session", {
 });
 
 export const taskTable = pgTable("tasks", {
-  eventId: text("id")
+  id: text("id").primaryKey(),
+  eventId: text("event_id")
     .notNull()
     .references(() => eventTable.id),
-  userId: text("userId")
+  userId: text("user_id")
     .notNull()
     .references(() => userTable.id),
-  id: text("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description").notNull(),
   time: timestamp("time"),
