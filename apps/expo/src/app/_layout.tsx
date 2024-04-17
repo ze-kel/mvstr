@@ -1,4 +1,3 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
@@ -6,10 +5,11 @@ import { TRPCProvider } from "~/utils/api";
 
 import "../styles.css";
 
-import { Text, View } from "react-native";
 import { useFonts } from "expo-font";
 
 import "../typography.css";
+
+import Spinner from "~/app/_components/spinner";
 
 // This is the main layout of the app
 // It wraps your pages with the providers they need
@@ -24,11 +24,7 @@ export default function RootLayout() {
   });
 
   if (!fontsLoaded) {
-    return (
-      <View>
-        <Text>Loading</Text>
-      </View>
-    );
+    return <Spinner />;
   }
 
   return (

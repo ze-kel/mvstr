@@ -10,6 +10,7 @@ import {
   sessionTable,
   taskTable,
   userTable,
+  wishTable,
 } from "./schema";
 
 export * from "drizzle-orm";
@@ -28,6 +29,7 @@ const schema = {
   eventTable,
   guestsTable,
   taskTable,
+  wishTable,
 };
 
 const pool = new Pool({

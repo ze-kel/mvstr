@@ -12,6 +12,7 @@ export const userTable = pgTable("user", {
   lastName: text("last_name"),
   profileImage: text("profile_image"),
   birthdayVk: text("birthday_vk"),
+  gender: text("gender"),
   vkConnected: boolean("vk_connected"),
   vkAccessToken: text("vk_token"),
 });
@@ -58,6 +59,7 @@ export const eventTable = pgTable("events", {
 });
 
 export const guestsTable = pgTable("guests", {
+  id: text("id").primaryKey(),
   eventId: text("id")
     .notNull()
     .references(() => eventTable.id),
@@ -68,6 +70,12 @@ export const guestsTable = pgTable("guests", {
   role: text("role").default("guest"),
 });
 
-export type DbUserSelect = typeof userTable.$inferSelect;
-export type DbEventSelect = typeof eventTable.$inferSelect;
-export type DbEventInsert = typeof eventTable.$inferInsert;
+export const wishTable = pgTable("wishes", {
+  id: text("id").primaryKey(),
+  userId: text("userId").references(() => userTable.id),
+  link: text("link"),
+  image: text("image_url"),
+  title: text("title"),
+  price: text("price"),
+  description: text("descriptions"),
+});

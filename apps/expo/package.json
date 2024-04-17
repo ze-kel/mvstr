@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@expo/metro-config": "^0.17.6",
+    "@gorhom/bottom-sheet": "^4.6.1",
+    "@react-native-community/datetimepicker": "7.6.1",
     "@react-native-picker/picker": "2.6.1",
     "@react-navigation/drawer": "^6.6.15",
     "@shopify/flash-list": "1.6.3",
@@ -25,9 +27,10 @@
     "@trpc/server": "11.0.0-next.320",
     "class-variance-authority": "^0.7.0",
     "date-fns": "^3.6.0",
-    "expo": "~50.0.14",
-    "expo-constants": "~15.4.5",
+    "expo": "~50.0.17",
+    "expo-constants": "~15.4.6",
     "expo-font": "~11.10.3",
+    "expo-image": "~1.10.6",
     "expo-linking": "~6.2.2",
     "expo-router": "~3.4.8",
     "expo-secure-store": "~12.8.1",
@@ -64,6 +67,9 @@
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.4"
+  },
+  "resolutions": {
+    "react-native-reanimated": "3.6.2"
   },
   "prettier": "@acme/prettier-config"
 }

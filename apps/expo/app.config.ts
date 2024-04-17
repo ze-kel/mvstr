@@ -8,16 +8,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   version: "0.1.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
-  userInterfaceStyle: "automatic",
+  userInterfaceStyle: "light",
   splash: {
-    image: "./assets/icon.png",
+    image: "./assets/splash.jpg",
     resizeMode: "contain",
     backgroundColor: "#1F104A",
   },
   updates: {
     fallbackToCacheTimeout: 0,
   },
-
   assetBundlePatterns: ["**/*"],
   ios: {
     bundleIdentifier: "your.bundle.identifier",

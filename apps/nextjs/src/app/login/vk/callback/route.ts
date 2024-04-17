@@ -27,15 +27,25 @@ const getMoreInfo = async (token: string) => {
 
   const { response } = await res.json();
 
-  const { id, bdate, first_name, last_name, photo_200 } = response as {
+  const { id, bdate, first_name, last_name, photo_200, sex } = response as {
     id: string;
     bdate: string;
     first_name: string;
     last_name: string;
     photo_200: string;
+    sex: number;
   };
 
-  return { id, bdate, first_name, last_name, photo_200 };
+  const s = ["unknown", "female", "male"];
+
+  return {
+    id,
+    bdate,
+    first_name,
+    last_name,
+    photo_200,
+    sex: s[sex] ?? "unknown",
+  };
 };
 
 export async function GET(request: Request): Promise<Response> {
@@ -78,7 +88,7 @@ export async function GET(request: Request): Promise<Response> {
       email: string;
     };
 
-    const { bdate, first_name, last_name, photo_200 } =
+    const { bdate, first_name, last_name, photo_200, sex } =
       await getMoreInfo(access_token);
 
     const existingUser = await db.query.userTable.findFirst({
@@ -86,17 +96,6 @@ export async function GET(request: Request): Promise<Response> {
     });
 
     if (existingUser) {
-      console.log({
-        birthdayVk: bdate,
-        firstName: first_name,
-        lastName: last_name,
-        profileImage: photo_200,
-        vkConnected: true,
-        vkAccessToken: access_token,
-        phone,
-        email,
-      });
-
       await db.update(schema.userTable).set({
         birthdayVk: bdate,
         firstName: first_name,
@@ -104,6 +103,7 @@ export async function GET(request: Request): Promise<Response> {
         profileImage: photo_200,
         vkConnected: true,
         vkAccessToken: access_token,
+        gender: sex,
         phone,
         email,
       });

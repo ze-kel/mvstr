@@ -20,7 +20,7 @@ export type INewTask = z.infer<typeof zNewTask>;
 
 export const tasksRouter = {
   getAllTasks: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.taskTable.findFirst({
+    return ctx.db.query.taskTable.findMany({
       where: eq(schema.taskTable.userId, ctx.user.id),
     });
   }),

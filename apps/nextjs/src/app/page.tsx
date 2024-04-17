@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { validateRequest } from "@acme/auth";
 
 import { Sidebar } from "~/app/_components/sidebar";
+import { TestComponent } from "~/app/_components/test";
 import { LogOut } from "~/app/login/auth";
 
 const Home = async () => {
@@ -13,13 +14,13 @@ const Home = async () => {
   }
 
   return (
-    <div className={"flex flex-col gap-4"}>
+    <div className={"flex flex-row gap-4"}>
       <Sidebar />
       <div>
+        <TestComponent />
         {r.user.firstName} {r.user.lastName}
+        <LogOut />
       </div>
-
-      <LogOut />
     </div>
   );
 };

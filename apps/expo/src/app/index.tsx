@@ -1,17 +1,32 @@
+import type { TRPCClientErrorLike } from "@trpc/client";
 import type { SvgProps } from "react-native-svg";
-import { useState } from "react";
-import { FlatList, Image, Modal, Pressable, Text, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  RefreshControl,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { ClipPath, Defs, G, Path } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link, Redirect, Stack, useRootNavigationState } from "expo-router";
+import {
+  Link,
+  Redirect,
+  Stack,
+  usePathname,
+  useRootNavigationState,
+  useRouter,
+} from "expo-router";
 import { TRPCClientError } from "@trpc/client";
 import { format, isToday, setDefaultOptions } from "date-fns";
 import { ru } from "date-fns/locale";
 
 import type { IEvent, IUser } from "@acme/api";
 
-import { Button } from "~/app/_components/button";
+import { TitleUserHeader } from "~/app/_components/layoutElements";
+import Spinner from "~/app/_components/spinner";
 import { api } from "~/utils/api";
 import { clearAuthTOken, getAuthToken } from "~/utils/auth";
 
@@ -35,7 +50,7 @@ const EventItem = ({ event }: { event: IEvent }) => {
 
   return (
     <Link
-      href={{ pathname: "/event/[eventId]", params: { eventId: event.id } }}
+      href={{ pathname: "/event/[eventId]/", params: { eventId: event.id } }}
       asChild
     >
       <Pressable>
@@ -84,23 +99,59 @@ const MainHeader = ({ user }: { user?: IUser }) => {
   );
 };
 
+const EventsList = () => {
+  const { data, isFetching, isPending, error } = api.events.list.useQuery();
+
+  const utils = api.useUtils();
+
+  if (isPending) {
+    return <Spinner />;
+  }
+
+  return (
+    <FlatList
+      data={data as IEvent[]}
+      ListFooterComponent={
+        <View>
+          <View className="h-6"></View>
+          <SafeAreaView />
+        </View>
+      }
+      refreshControl={
+        <RefreshControl
+          refreshing={isFetching && !isPending}
+          onRefresh={async () => {
+            await utils.events.list.refetch();
+          }}
+        />
+      }
+      ListHeaderComponent={
+        <View className="px-4" style={{}}>
+          <Text
+            className="pb-4 pt-7"
+            style={{
+              fontSize: 22,
+              fontFamily: "NeueMachina-Ultrabold",
+            }}
+          >
+            Мои мероприятия
+          </Text>
+        </View>
+      }
+      keyExtractor={(item) => item.id}
+      renderItem={(v) => <EventItem event={v.item} />}
+    ></FlatList>
+  );
+};
+
 export default function Index() {
   const rootNavigationState = useRootNavigationState();
   const token = getAuthToken();
 
-  const { data, error } = api.events.list.useQuery();
-
   const u = api.user.getMe.useQuery();
-
-  const [isModal, setModal] = useState(false);
 
   if (rootNavigationState.key) {
     if (!token) {
-      return <Redirect href={"/login/"} />;
-    }
-
-    if (error instanceof TRPCClientError && error.message === "UNAUTHORIZED") {
-      clearAuthTOken();
       return <Redirect href={"/login/"} />;
     }
   }
@@ -119,62 +170,23 @@ export default function Index() {
       <View className="absolute bottom-0 left-0 h-1/2 w-full bg-surface-inverse"></View>
 
       <SafeAreaView edges={["top", "left", "right"]} className="flex ">
-        {/* Changes page title visible on the header */}
         <Stack.Screen options={{ title: "", headerTransparent: true }} />
-        <View className="flex h-full w-full ">
-          <View className="flex flex-row items-center justify-between px-[16px]">
-            <View className="flex flex-row items-center gap-2">
-              <Image
-                source={require("../../assets/logo.png")}
-                style={{ width: 36, resizeMode: "contain", display: "flex" }}
-              />
-              <Text
-                className="text-xl font-bold"
-                style={{ fontFamily: "NeueMachina-Ultrabold" }}
-              >
-                Место Встречи
-              </Text>
-            </View>
 
-            <View>
-              <Text>user</Text>
-            </View>
-          </View>
+        <View className="flex h-full w-full ">
+          <TitleUserHeader />
 
           <MainHeader user={u.data}></MainHeader>
 
           <View
             className="flex bg-surface-inverse"
             style={{
+              overflow: "hidden",
               flex: 1,
               borderTopLeftRadius: 28,
               borderTopRightRadius: 28,
             }}
           >
-            <FlatList
-              data={data as IEvent[]}
-              ListFooterComponent={
-                <View>
-                  <View className="h-6"></View>
-                  <SafeAreaView />
-                </View>
-              }
-              ListHeaderComponent={
-                <View className="px-4" style={{}}>
-                  <Text
-                    className="pb-4 pt-7"
-                    style={{
-                      fontSize: 22,
-                      fontFamily: "NeueMachina-Ultrabold",
-                    }}
-                  >
-                    Мои мероприятия
-                  </Text>
-                </View>
-              }
-              keyExtractor={(item) => item.id}
-              renderItem={(v) => <EventItem event={v.item} />}
-            ></FlatList>
+            <EventsList />
           </View>
         </View>
       </SafeAreaView>

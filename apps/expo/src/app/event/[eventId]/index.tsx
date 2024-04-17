@@ -5,7 +5,7 @@ const EventPage = () => {
   const { eventId } = useLocalSearchParams();
 
   return (
-    <View>
+    <View className="" style={{ zIndex: 1, elevation: 1 }}>
       <Text>{eventId}</Text>
     </View>
   );

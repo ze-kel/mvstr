@@ -4,6 +4,7 @@ import type { AppRouter } from "./root";
 import type { IEvent, INewEvent } from "./router/events";
 import type { INewTask, ITask } from "./router/tasks";
 import type { IUser } from "./router/user";
+import type { INewWish, IWish } from "./router/wishlist.js";
 import { appRouter } from "./root";
 import { createCallerFactory, createTRPCContext } from "./trpc";
 
@@ -42,4 +43,6 @@ export type {
   IUser,
   ITask,
   INewTask,
+  IWish,
+  INewWish,
 };

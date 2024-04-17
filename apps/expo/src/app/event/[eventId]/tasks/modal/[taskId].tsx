@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { QueryClient, QueryKey } from "@tanstack/react-query";
+
 import { useRef } from "react";
 import { Text, TextInput, View } from "react-native";
 import { Redirect, useGlobalSearchParams, useRouter } from "expo-router";
@@ -10,29 +9,6 @@ import type { INewTask, ITask } from "@acme/api";
 
 import { Button } from "~/app/_components/button";
 import { api } from "~/utils/api";
-
-const writeUpdateToAll = (
-  client: QueryClient,
-  key: QueryKey,
-  update: { taskId: string; update: Partial<ITask> },
-) => {
-  let toReturn: ITask;
-
-  client.setQueryData(key, (tasks: ITask[]) => {
-    tasks.map((v) => {
-      if (v.id === update.taskId) {
-        toReturn = v;
-        return { ...v, ...update.update };
-      }
-      return v;
-    });
-  });
-
-  if (!toReturn) {
-    console.error("no to return");
-  }
-  return toReturn;
-};
 
 const TaskEditor = ({
   initial,
@@ -137,7 +113,7 @@ const EditMode = () => {
   if (!currentOne)
     return (
       <Redirect
-        href={{ pathname: "/event/[eventId]/", params: { eventId } }}
+        href={{ pathname: "/event/[eventId]/tasks/", params: { eventId } }}
       ></Redirect>
     );
 

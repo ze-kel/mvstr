@@ -24,9 +24,15 @@ CREATE TABLE IF NOT EXISTS "PBXKK_session" (
 	"expires_at" timestamp with time zone NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "PBXKK_test" (
+CREATE TABLE IF NOT EXISTS "PBXKK_tasks" (
 	"id" text PRIMARY KEY NOT NULL,
-	"value" text
+	"event_id" text NOT NULL,
+	"user_id" text NOT NULL,
+	"title" text NOT NULL,
+	"description" text NOT NULL,
+	"time" timestamp,
+	"completed" boolean,
+	"parent_id" text
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "PBXKK_user" (
@@ -40,6 +46,16 @@ CREATE TABLE IF NOT EXISTS "PBXKK_user" (
 	"birthday_vk" text,
 	"vk_connected" boolean,
 	"vk_token" text
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "PBXKK_wishes" (
+	"id" text PRIMARY KEY NOT NULL,
+	"userId" text,
+	"link" text,
+	"image_url" text,
+	"title" text,
+	"price" text,
+	"descriptions" text
 );
 --> statement-breakpoint
 DO $$ BEGIN
@@ -62,6 +78,30 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "PBXKK_session" ADD CONSTRAINT "PBXKK_session_user_id_PBXKK_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "PBXKK_user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "PBXKK_tasks" ADD CONSTRAINT "PBXKK_tasks_event_id_PBXKK_events_id_fk" FOREIGN KEY ("event_id") REFERENCES "PBXKK_events"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "PBXKK_tasks" ADD CONSTRAINT "PBXKK_tasks_user_id_PBXKK_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "PBXKK_user"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "PBXKK_tasks" ADD CONSTRAINT "PBXKK_tasks_parent_id_PBXKK_tasks_id_fk" FOREIGN KEY ("parent_id") REFERENCES "PBXKK_tasks"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "PBXKK_wishes" ADD CONSTRAINT "PBXKK_wishes_userId_PBXKK_user_id_fk" FOREIGN KEY ("userId") REFERENCES "PBXKK_user"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
