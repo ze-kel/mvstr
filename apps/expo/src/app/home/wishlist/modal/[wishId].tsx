@@ -1,12 +1,83 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
+import { Image } from "expo-image";
+import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+import * as ImagePicker from "expo-image-picker";
 import { Redirect, useGlobalSearchParams, useRouter } from "expo-router";
 
 import type { INewWish, IWish } from "@acme/api";
 
 import { Button } from "~/app/_components/button";
 import { Input } from "~/app/_components/input";
+import Spinner from "~/app/_components/spinner";
 import { api } from "~/utils/api";
+
+const ImageUploader = ({
+  value,
+  onChange,
+}: {
+  value?: string;
+  onChange: (v: string) => void;
+}) => {
+  const [state, setState] = useState(value);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const m = api.images.uploadImage.useMutation();
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setIsLoading(true);
+      const b = await manipulateAsync(
+        result.assets[0].uri,
+        [{ resize: { width: 500, height: 500 } }],
+        {
+          compress: 0.25,
+          format: SaveFormat.JPEG,
+          base64: true,
+        },
+      );
+
+      const res = await m.mutateAsync({ file: b.base64!, extension: "jpg" });
+      setState(res);
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <View>
+      <View className="flex flex-row">
+        <Image
+          source={{
+            uri: state,
+          }}
+          style={{
+            marginTop: 2,
+            borderRadius: 16,
+            flex: 1,
+            width: 50,
+            height: 50,
+            aspectRatio: 1,
+          }}
+        />
+        <View className="h-[50px] w-[50px]">{isLoading && <Spinner />}</View>
+      </View>
+
+      <Text>{state}</Text>
+
+      <Button onPress={pickImage}>Загрузить изображение</Button>
+    </View>
+  );
+};
 
 interface WishEditorProps {
   initial?: Omit<IWish, "id">;
@@ -32,12 +103,10 @@ const WishEditor = ({ initial, handleSave }: WishEditorProps) => {
         autoFocus
       />
       <Text className="subHeadingM mt-3">Картинка</Text>
-      <Input
-        defaultValue={wish.current.image ?? ""}
-        onChangeText={(v) => (wish.current.image = v)}
-        className="mt-3"
-        placeholder="урл"
-        autoFocus
+
+      <ImageUploader
+        value={wish.current.image ?? undefined}
+        onChange={(v) => (wish.current.image = v)}
       />
       <Text className="subHeadingM mt-4">Название</Text>
       <Input
@@ -45,7 +114,6 @@ const WishEditor = ({ initial, handleSave }: WishEditorProps) => {
         onChangeText={(v) => (wish.current.title = v)}
         className="mt-3"
         placeholder="Введите название"
-        autoFocus
       />
       <Text className="subHeadingM mt-4">Цена подарка</Text>
       <Input

@@ -34,7 +34,6 @@ export default function TabLayout() {
           overflow: "hidden",
           borderRadius: 28,
           backgroundColor: "rgba(254, 254, 254, 1)",
-          paddingHorizontal: 16,
         }}
         screenOptions={{
           headerShown: false,

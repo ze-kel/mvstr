@@ -16,7 +16,7 @@ const zNewWish = createInsertSchema(schema.wishTable, {
   userId: z.undefined(),
 });
 
-export type IWish = typeof schema.wishTable.$inferSelect;
+export type IWish = z.infer<typeof ZWish>;
 export type INewWish = z.infer<typeof zNewWish>;
 
 export const wishRouter = {

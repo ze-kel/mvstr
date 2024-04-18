@@ -44,8 +44,6 @@ const TaskItem = ({ task }: { task: ITask }) => {
   const utils = api.useUtils();
   const mutate = api.tasks.updateTask.useMutation({
     onMutate: (updatedTask) => {
-      console.log("MUTATING", updatedTask);
-
       utils.tasks.getTasksForEvent.setData({ id: eventId }, (data) => {
         if (!data) return data;
 
@@ -61,7 +59,7 @@ const TaskItem = ({ task }: { task: ITask }) => {
   });
 
   return (
-    <View className="flex flex-row items-center rounded-xl bg-surface-secondary p-3 pr-0">
+    <View className="flex flex-row items-center rounded-xl bg-surface-secondary p-3 px-4">
       <Pressable
         className="h-full pl-2 pr-4"
         onPress={() => {
@@ -184,7 +182,7 @@ export default function Index() {
         }
         contentContainerClassName="mt-3 flex flex-col gap-2"
         ListHeaderComponent={
-          <View className="flex flex-row items-start justify-between">
+          <View className="flex flex-row items-start justify-between px-4">
             <View className="glex gap-1">
               <Text
                 style={{

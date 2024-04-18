@@ -77,8 +77,6 @@ const EditMode = () => {
   // when we navigate to other page after saving
   const mutate = api.tasks.updateTask.useMutation({
     onMutate: (updatedTask) => {
-      console.log("MUTATING", updatedTask);
-
       utils.tasks.getTasksForEvent.setData({ id: eventId }, (data) => {
         if (!data) return data;
 
