@@ -66,7 +66,7 @@ export default function Index() {
 
   const [ttt, setTttt] = useState("");
 
-  if (rootNavigationState.key && token) return <Redirect href={"/"} />;
+  if (rootNavigationState.key && token) return <Redirect href={"/home/"} />;
 
   return (
     <View className="bg-surface-secondary">

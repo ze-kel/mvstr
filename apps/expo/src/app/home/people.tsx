@@ -1,11 +1,11 @@
 import { Text, View } from "react-native";
 
-const UserMenu = () => {
+const HomePeople = () => {
   return (
     <View>
-      <Text>Hello user menu</Text>
+      <Text>People</Text>
     </View>
   );
 };
 
-export default UserMenu;
+export default HomePeople;

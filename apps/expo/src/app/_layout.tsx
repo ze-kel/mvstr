@@ -9,6 +9,8 @@ import { useFonts } from "expo-font";
 
 import "../typography.css";
 
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 import Spinner from "~/app/_components/spinner";
 
 // This is the main layout of the app

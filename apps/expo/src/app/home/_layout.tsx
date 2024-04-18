@@ -1,40 +1,24 @@
-import * as React from "react";
-import { SafeAreaView, Text, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { Tabs, useGlobalSearchParams, usePathname } from "expo-router";
+import React from "react";
+import { Tabs } from "expo-router";
 
 import {
   IconAll,
   IconPeople,
   IconPlus,
-  IconTasks,
   IconWishList,
 } from "~/app/_components/icons";
 import { TitleUserHeader } from "~/app/_components/layoutElements";
-
-export const IconWrapper = ({ children }: { children: React.ReactNode }) => (
-  <View
-    className="flex h-full w-full items-center justify-center"
-    style={{
-      position: "absolute",
-      top: 0,
-      height: 60,
-    }}
-  >
-    {children}
-  </View>
-);
+import { IconWrapper } from "~/app/event/[eventId]/_layout";
 
 export default function TabLayout() {
   return (
     <>
-      <TitleUserHeader />
+      <TitleUserHeader forceTitle />
       <Tabs
         sceneContainerStyle={{
           overflow: "hidden",
           borderRadius: 28,
           backgroundColor: "rgba(254, 254, 254, 1)",
-          paddingHorizontal: 16,
         }}
         screenOptions={{
           headerShown: false,
@@ -75,12 +59,12 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="tasks"
+          name="create"
           options={{
             tabBarLabel: () => null,
             tabBarIcon: ({ focused }) => (
               <IconWrapper>
-                <IconTasks
+                <IconPlus
                   width={20}
                   height={20}
                   fill={
@@ -91,7 +75,6 @@ export default function TabLayout() {
             ),
           }}
         />
-
         <Tabs.Screen
           name="people"
           options={{

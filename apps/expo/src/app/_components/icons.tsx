@@ -22,9 +22,9 @@ export const IconTasks = React.forwardRef<Svg, SvgProps>(
 
 export const IconPlus = React.forwardRef<Svg, SvgProps>(({ ...props }, ref) => {
   return (
-    <Svg ref={ref} {...props} viewBox="0 0 24 24">
-      <Path d="M3.598 13.2a1.2 1.2 0 0 1 0-2.4h16.8a1.2 1.2 0 1 1 0 2.4h-16.8Z" />
-      <Path d="M13.198 20.4a1.2 1.2 0 1 1-2.4 0V3.6a1.2 1.2 0 0 1 2.4 0v16.8Z" />
+    <Svg ref={ref} {...props} viewBox="0 0 20 20">
+      <Path d="M1.6 11.2a1.2 1.2 0 010-2.4h16.8a1.2 1.2 0 110 2.4H1.6z" />
+      <Path d="M11.2 18.4a1.2 1.2 0 11-2.4 0V1.6a1.2 1.2 0 112.4 0v16.8z" />
     </Svg>
   );
 });

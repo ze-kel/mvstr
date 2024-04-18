@@ -1,4 +1,3 @@
-
 import { useRef } from "react";
 import { Text, TextInput, View } from "react-native";
 import { Redirect, useGlobalSearchParams, useRouter } from "expo-router";

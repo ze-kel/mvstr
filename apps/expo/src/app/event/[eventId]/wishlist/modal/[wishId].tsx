@@ -131,7 +131,10 @@ const EditMode = () => {
   if (!currentOne)
     return (
       <Redirect
-        href={{ pathname: "/event/[eventId]/wishlist", params: { eventId } }}
+        href={{
+          pathname: "/event/[eventId]/wishlist",
+          params: { eventId },
+        }}
       ></Redirect>
     );
 
