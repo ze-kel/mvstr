@@ -116,10 +116,6 @@ export async function GET(request: Request): Promise<Response> {
         sessionCookie.attributes,
       );
 
-      const redirectTo = url.searchParams.get("state")
-        ? url.searchParams.get("state") + `token=${session.id}`
-        : "/";
-
       return new Response(null, {
         status: 302,
         headers: {
@@ -150,10 +146,6 @@ export async function GET(request: Request): Promise<Response> {
       sessionCookie.value,
       sessionCookie.attributes,
     );
-
-    const redirectTo = url.searchParams.get("state")
-      ? url.searchParams.get("state") + `token=${session.id}`
-      : "/";
 
     return new Response(null, {
       status: 302,

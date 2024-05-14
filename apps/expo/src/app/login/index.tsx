@@ -8,7 +8,6 @@ import { Redirect, Stack, useRootNavigationState } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 
 import { Button } from "~/app/_components/button";
-import { Input } from "~/app/_components/input";
 import { TitleUserHeader } from "~/app/_components/layoutElements";
 import { getAuthToken, setAuthToken } from "~/utils/auth";
 
@@ -69,17 +68,8 @@ export default function Index() {
   if (rootNavigationState.key && token) return <Redirect href={"/home/"} />;
 
   return (
-    <View className="bg-surface-secondary">
-      <LinearGradient
-        colors={[
-          "rgba(223, 203, 255, 0.4)",
-          "rgba(239, 238, 246, 0.4)",
-          "rgba(242, 241, 246, 0.4)",
-        ]}
-        style={{ height: 300, width: "100%", position: "absolute" }}
-      />
-
-      <SafeAreaView edges={["top", "left", "right"]} className="flex ">
+    <View>
+      <SafeAreaView edges={["left", "right"]} className="flex ">
         <Stack.Screen options={{ title: "", headerTransparent: true }} />
 
         <View className="flex h-full w-full ">

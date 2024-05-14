@@ -10,6 +10,7 @@ import { Button } from "~/app/_components/button";
 import { IconPlus } from "~/app/_components/icons";
 import Spinner from "~/app/_components/spinner";
 import { api } from "~/utils/api";
+import { formatPrice } from "~/utils/priceFormater";
 
 setDefaultOptions({ locale: ru });
 
@@ -55,7 +56,7 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
           </View>
 
           <Text className="captionXL mt-2 w-full">{wish.title}</Text>
-          <Text className="textM mt-0.5 w-full">{wish.price}</Text>
+          <Text className="textM mt-0.5 w-full">{formatPrice(wish.price)}</Text>
         </View>
       </Pressable>
     </Link>

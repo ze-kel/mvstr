@@ -1,12 +1,7 @@
-import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
-import { Image } from "expo-image";
-import { Link, useGlobalSearchParams } from "expo-router";
-import { ru } from "date-fns/locale";
+import { FlatList, RefreshControl } from "react-native";
+import { useGlobalSearchParams } from "expo-router";
 
-import type { IWish } from "@acme/api";
 
-import { Button } from "~/app/_components/button";
-import { IconPlus } from "~/app/_components/icons";
 import Spinner from "~/app/_components/spinner";
 import { api } from "~/utils/api";
 import { WishlistHeader, WishItem } from "~/app/home/wishlist";

@@ -113,7 +113,7 @@ export const TitleUserHeader = ({
   return (
     <SafeAreaView>
       <LinearGradient
-        colors={["rgba(223, 203, 255, 0.4)", "rgba(223, 203, 255, 0.4)"]}
+        colors={["rgba(223, 203, 255, 0.4)", "rgba(223, 203, 255, 0)"]}
         style={{
           height: 300,
           width: "100%",

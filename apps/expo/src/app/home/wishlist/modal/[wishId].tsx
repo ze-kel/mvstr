@@ -1,5 +1,12 @@
 import { useRef, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
@@ -22,7 +29,7 @@ const ImageUploader = ({
   const [state, setState] = useState(value);
   const [isLoading, setIsLoading] = useState(false);
 
-  const m = api.images.uploadImage.useMutation();
+  const uploadImage = api.images.uploadImage.useMutation();
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -33,48 +40,56 @@ const ImageUploader = ({
       quality: 1,
     });
 
-    console.log(result);
-
-    if (!result.canceled) {
+    if (!result.canceled && result.assets[0]) {
       setIsLoading(true);
       const b = await manipulateAsync(
         result.assets[0].uri,
-        [{ resize: { width: 500, height: 500 } }],
+        [{ resize: { width: 750, height: 750 } }],
         {
-          compress: 0.25,
+          compress: 0.35,
           format: SaveFormat.JPEG,
           base64: true,
         },
       );
 
-      const res = await m.mutateAsync({ file: b.base64!, extension: "jpg" });
+      const res = await uploadImage.mutateAsync({
+        file: b.base64!,
+        extension: "jpg",
+      });
       setState(res);
       setIsLoading(false);
+      onChange(res);
     }
   };
 
   return (
-    <View>
-      <View className="flex flex-row">
-        <Image
-          source={{
-            uri: state,
-          }}
-          style={{
-            marginTop: 2,
-            borderRadius: 16,
-            flex: 1,
-            width: 50,
-            height: 50,
-            aspectRatio: 1,
-          }}
-        />
-        <View className="h-[50px] w-[50px]">{isLoading && <Spinner />}</View>
-      </View>
+    <View className="mt-2">
+      <Pressable onPress={pickImage}>
+        <View className="flex w-[200px] flex-row">
+          <View className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-3xl border border-dashed border-black ">
+            <Text className="subHeadingM">Загрузить фото</Text>
+          </View>
 
-      <Text>{state}</Text>
-
-      <Button onPress={pickImage}>Загрузить изображение</Button>
+          <Image
+            source={{
+              uri: state,
+            }}
+            style={{
+              borderRadius: 16,
+              flex: 0,
+              width: 200,
+              height: 200,
+              aspectRatio: 1,
+            }}
+          />
+          {isLoading && (
+            <View className="absolute left-0 top-0 h-full w-full ">
+              <View className="absolute left-0 top-0 h-full w-full bg-white opacity-60"></View>
+              {true && <Spinner />}
+            </View>
+          )}
+        </View>
+      </Pressable>
     </View>
   );
 };
@@ -93,14 +108,19 @@ const WishEditor = ({ initial, handleSave }: WishEditorProps) => {
   );
 
   return (
-    <ScrollView className="rounded-[28px] bg-surface-inverse px-4 pb-32 pt-6">
+    <ScrollView className="rounded-[28px] bg-surface-inverse px-4 pb-32 pt-7">
+      <Text className="headingS text-center">Изменить желание</Text>
+
+      <Text className="textXXL mb-5 mt-1.5 text-center">
+        Вы можете изменить или добавить новую информацию о подарке
+      </Text>
+
       <Text className="subHeadingM">Ссылка на подарок</Text>
       <Input
         defaultValue={wish.current.link ?? ""}
         onChangeText={(v) => (wish.current.link = v)}
         className="mt-3"
         placeholder="Cсылку из интернет-магазина"
-        autoFocus
       />
       <Text className="subHeadingM mt-3">Картинка</Text>
 
@@ -117,6 +137,7 @@ const WishEditor = ({ initial, handleSave }: WishEditorProps) => {
       />
       <Text className="subHeadingM mt-4">Цена подарка</Text>
       <Input
+        keyboardType="numeric"
         defaultValue={wish.current.price ?? ""}
         onChangeText={(v) => (wish.current.price = v)}
         className="mt-3"
@@ -138,6 +159,7 @@ const WishEditor = ({ initial, handleSave }: WishEditorProps) => {
       >
         Сохранить
       </Button>
+      <SafeAreaView />
     </ScrollView>
   );
 };
@@ -174,11 +196,20 @@ const EditMode = () => {
   });
 
   const handler = async (v: Partial<IWish>) => {
-    await mutate.mutateAsync({ wishId, update: v });
-    router.navigate({
-      pathname: "/event/[eventId]/wishlist/",
-      params: { eventId },
-    });
+    if (wishId) {
+      await mutate.mutateAsync({ wishId, update: v });
+    }
+
+    if (eventId) {
+      router.navigate({
+        pathname: "/event/[eventId]/wishlist/",
+        params: { eventId },
+      });
+    } else {
+      router.navigate({
+        pathname: "/home/wishlist/",
+      });
+    }
   };
 
   if (isLoading) {
@@ -189,15 +220,26 @@ const EditMode = () => {
     );
   }
 
-  if (!currentOne)
+  if (!currentOne) {
+    if (eventId) {
+      return (
+        <Redirect
+          href={{
+            pathname: "/event/[eventId]/wishlist/",
+            params: { eventId },
+          }}
+        ></Redirect>
+      );
+    }
     return (
       <Redirect
         href={{
-          pathname: "/event/[eventId]/wishlist/",
+          pathname: "/home/wishlist/",
           params: { eventId },
         }}
       ></Redirect>
     );
+  }
 
   return (
     <View>
@@ -218,17 +260,26 @@ const CreateMode = () => {
 
   const handler = async (v: INewWish) => {
     await mutate.mutateAsync(v);
-    router.replace({
-      pathname: "/event/[eventId]/wishlist/",
-      params: { eventId },
-    });
+
+    if (eventId) {
+      router.replace({
+        pathname: "/event/[eventId]/wishlist/",
+        params: { eventId },
+      });
+    } else {
+      router.replace({
+        pathname: "/home/wishlist",
+      });
+    }
   };
 
   return (
-    <WishEditor
-      initial={{ title: "", description: "" }}
-      handleSave={handler}
-    ></WishEditor>
+    <View>
+      <WishEditor
+        initial={{ title: "", description: "" }}
+        handleSave={handler}
+      />
+    </View>
   );
 };
 
