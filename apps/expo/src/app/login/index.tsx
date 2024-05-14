@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Linking from "expo-linking";
-import { Redirect, Stack, useRootNavigationState } from "expo-router";
+import { Link, Redirect, Stack, useRootNavigationState } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 
 import { Button } from "~/app/_components/button";
@@ -63,40 +63,36 @@ export default function Index() {
 
   const [_, setKey] = useState(1);
 
-  const [ttt, setTttt] = useState("");
-
   if (rootNavigationState.key && token) return <Redirect href={"/home/"} />;
 
   return (
-    <View>
-      <SafeAreaView edges={["left", "right"]} className="flex ">
-        <Stack.Screen options={{ title: "", headerTransparent: true }} />
-
-        <View className="flex h-full w-full ">
-          <TitleUserHeader hideUser />
-
-          <View className="mx-4 rounded-[20px] bg-surface-inverse px-5 py-7">
-            <View className="headingL text-center text-[24px] leading-[28px]">
-              <Text className="headingL text-center text-[24px] leading-[28px]">
-                Добро пожаловать
-              </Text>
-              <Text className="headingL text-center text-[24px] leading-[28px]">
-                в Место Встречи
-              </Text>
-            </View>
-            <Text className="textL mt-1.5 text-center">
-              Войдите в ваш аккаунт или создайте новый
-            </Text>
-
-            <LoginWithVk
-              onToken={(v) => {
-                setAuthToken(v);
-                setKey((v) => v + 1);
-              }}
-            />
-          </View>
+    <View className="flex h-full w-full ">
+      <View className="mx-4 rounded-[20px] bg-surface-inverse px-5 py-7">
+        <View className="headingL text-center text-[24px] leading-[28px]">
+          <Text className="headingL text-center text-[24px] leading-[28px]">
+            Добро пожаловать
+          </Text>
+          <Text className="headingL text-center text-[24px] leading-[28px]">
+            в Место Встречи
+          </Text>
         </View>
-      </SafeAreaView>
+        <Text className="textL mt-1.5 text-center">
+          Войдите в ваш аккаунт или создайте новый
+        </Text>
+
+        <Link href={"/login/phone"} asChild>
+          <Button className="mt-4" variant={"stroke"}>
+            По номеру телефона
+          </Button>
+        </Link>
+
+        <LoginWithVk
+          onToken={(v) => {
+            setAuthToken(v);
+            setKey((v) => v + 1);
+          }}
+        />
+      </View>
     </View>
   );
 }

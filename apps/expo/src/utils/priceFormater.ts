@@ -4,7 +4,7 @@ const formatter = Intl.NumberFormat("ru-RU", {
   minimumFractionDigits: 0,
 });
 
-export const formatPrice = (v: number | string | undefined) => {
+export const formatPrice = (v: number | string | undefined | null) => {
   if (!v) return "";
 
   const n = Number(v);

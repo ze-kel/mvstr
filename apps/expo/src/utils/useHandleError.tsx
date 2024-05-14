@@ -1,6 +1,7 @@
+import { usePathname, useRouter } from "expo-router";
 import { TRPCClientError } from "@trpc/client";
-import { useRouter, usePathname } from "expo-router";
-import { clearAuthTOken } from "~/utils/auth";
+
+import { clearAuthTokenSync } from "~/utils/auth";
 
 export const useHandleError = (e: unknown) => {
   const router = useRouter();
@@ -14,7 +15,7 @@ export const useHandleError = (e: unknown) => {
     e.message === "UNAUTHORIZED" &&
     path !== "/login/"
   ) {
-    clearAuthTOken();
+    clearAuthTokenSync();
     router.navigate("/login/");
   }
 };

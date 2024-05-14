@@ -10,6 +10,7 @@ import { useFonts } from "expo-font";
 import "../typography.css";
 
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import Spinner from "~/app/_components/spinner";
 
@@ -31,14 +32,18 @@ export default function RootLayout() {
 
   return (
     <TRPCProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          headerStyle: { backgroundColor: "rgba(243, 245, 247, 1)" },
-          contentStyle: { backgroundColor: "rgba(243, 245, 247, 1)" },
-        }}
-      ></Stack>
-      <StatusBar translucent={false} style="dark" />
+      <GestureHandlerRootView>
+        <BottomSheetModalProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              headerStyle: { backgroundColor: "rgba(243, 245, 247, 1)" },
+              contentStyle: { backgroundColor: "rgba(243, 245, 247, 1)" },
+            }}
+          ></Stack>
+          <StatusBar translucent={false} style="dark" />
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
     </TRPCProvider>
   );
 }

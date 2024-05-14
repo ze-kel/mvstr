@@ -29,7 +29,6 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
             }
           : {
               pathname: "/home/wishlist/modal/[wishId]",
-
               params: { wishId: wish.id },
             }
       }

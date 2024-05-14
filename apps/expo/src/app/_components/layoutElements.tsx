@@ -1,35 +1,41 @@
-import type { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useCallback, useMemo, useRef, useState } from "react";
-import {
-  Image,
-  Modal,
-  Pressable,
-  SafeAreaView,
-  Text,
-  View,
-} from "react-native";
+import { useCallback, useMemo, useRef } from "react";
+import { Pressable, SafeAreaView, Text, View } from "react-native";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link, useGlobalSearchParams } from "expo-router";
+import { useGlobalSearchParams } from "expo-router";
 import DefaultBoy from "@assets/defaultBoy.png";
 import DefaultGirl from "@assets/defaultGirl.png";
 import Logo from "@assets/logo.png";
-import {
-  BottomSheetModalProvider,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 
+import { Button } from "~/app/_components/button";
 import { api } from "~/utils/api";
+import { clearAuthToken } from "~/utils/auth";
 import { useHandleError } from "~/utils/useHandleError";
 
 export const UserMenu = () => {
   const u = api.user.getMe.useQuery();
   useHandleError(u.error);
 
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ["25%"], []);
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index);
+  }, []);
+
   if (!u.data) return <></>;
+
+  const logout = async () => {
+    await clearAuthToken();
+    u.refetch();
+  };
 
   return (
     <>
-      <Pressable>
+      <Pressable onPress={handlePresentModalPress}>
         {u.data.profileImage?.length ? (
           <Image
             source={{ uri: u.data.profileImage }}
@@ -54,6 +60,33 @@ export const UserMenu = () => {
           />
         )}
       </Pressable>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        style={{
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 5,
+          },
+          shadowOpacity: 0.34,
+          shadowRadius: 6.27,
+
+          elevation: 10,
+        }}
+      >
+        <BottomSheetView className=" flex  items-center px-4">
+          <Text className="subHeadingL">
+            {u.data.firstName} {u.data.lastName}
+          </Text>
+          <Text className="textXL">{u.data.phone}</Text>
+          <Button onPress={logout} className="mt-4 w-full" variant={"stroke"}>
+            Выйти
+          </Button>
+        </BottomSheetView>
+      </BottomSheetModal>
     </>
   );
 };
@@ -111,17 +144,7 @@ export const TitleUserHeader = ({
   }>();
 
   return (
-    <SafeAreaView>
-      <LinearGradient
-        colors={["rgba(223, 203, 255, 0.4)", "rgba(223, 203, 255, 0)"]}
-        style={{
-          height: 300,
-          width: "100%",
-          position: "absolute",
-          zIndex: 0,
-          elevation: 0,
-        }}
-      />
+    <SafeAreaView className="bg-surface-secondary">
       <View className="flex w-full py-6">
         <View className="flex flex-row items-center justify-between px-[16px]">
           {!eventId || forceTitle ? <TitleHead /> : <EventHead />}

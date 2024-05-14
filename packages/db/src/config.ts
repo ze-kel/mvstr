@@ -10,4 +10,5 @@ export default {
     connectionString: env.DATABASE_URL,
   },
   tablesFilter: ["PBXKK_*"],
+  verbose: true,
 } satisfies Config;

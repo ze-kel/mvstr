@@ -1,8 +1,6 @@
-import type { TRPCClientErrorLike } from "@trpc/client";
 import type { SvgProps } from "react-native-svg";
 import {
   FlatList,
-  Image,
   Pressable,
   RefreshControl,
   Text,
@@ -10,25 +8,19 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { ClipPath, Defs, G, Path } from "react-native-svg";
-import { LinearGradient } from "expo-linear-gradient";
 import {
   Link,
   Redirect,
-  Stack,
-  usePathname,
   useRootNavigationState,
-  useRouter,
 } from "expo-router";
-import { TRPCClientError } from "@trpc/client";
 import { format, isToday, setDefaultOptions } from "date-fns";
 import { ru } from "date-fns/locale";
 
 import type { IEvent, IUser } from "@acme/api";
 
-import { TitleUserHeader } from "~/app/_components/layoutElements";
 import Spinner from "~/app/_components/spinner";
 import { api } from "~/utils/api";
-import { clearAuthTOken, getAuthToken } from "~/utils/auth";
+import { getAuthToken } from "~/utils/auth";
 
 setDefaultOptions({ locale: ru });
 

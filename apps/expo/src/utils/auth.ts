@@ -8,6 +8,10 @@ export const setAuthToken = (token: string) => {
   return SecureStore.setItem("auth_session_id", token);
 };
 
-export const clearAuthTOken = () => {
+export const clearAuthTokenSync = () => {
   SecureStore.setItem("auth_session_id", "");
+};
+
+export const clearAuthToken = async () => {
+  await SecureStore.deleteItemAsync("auth_session_id");
 };

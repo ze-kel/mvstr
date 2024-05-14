@@ -8,6 +8,8 @@ import * as z from "zod";
 import {
   eventTable,
   guestsTable,
+  phoneTokenRequest,
+  phoneTokens,
   sessionTable,
   taskTable,
   userTable,
@@ -34,6 +36,8 @@ const schema = {
   guestsTable,
   taskTable,
   wishTable,
+  phoneTokenRequest,
+  phoneTokens,
 };
 
 const pool = new Pool({

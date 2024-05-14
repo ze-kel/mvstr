@@ -17,6 +17,24 @@ export const userTable = pgTable("user", {
   vkAccessToken: text("vk_token"),
 });
 
+export const phoneTokenRequest = pgTable("phoneverification", {
+  phone: text("phone").primaryKey(),
+  code: text("code"),
+  expiresAt: timestamp("requested_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+});
+
+export const phoneTokens = pgTable("phonetokens", {
+  token: text("token").primaryKey(),
+  phone: text("phone"),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+});
+
 export const sessionTable = pgTable("session", {
   id: text("id").primaryKey(),
   userId: text("user_id")
@@ -64,8 +82,6 @@ export const guestsTable = pgTable("guests", {
     .notNull()
     .references(() => eventTable.id),
   type: text("type"),
-  // Если мы приглашаем зареганного челика
-  userId: text("userId").references(() => userTable.id),
   phone: text("phone"),
   role: text("role").default("guest"),
 });
