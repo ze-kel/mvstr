@@ -9,7 +9,7 @@ import * as WebBrowser from "expo-web-browser";
 
 import { Button } from "~/app/_components/button";
 import { TitleUserHeader } from "~/app/_components/layoutElements";
-import { getAuthToken, setAuthToken } from "~/utils/auth";
+import { getAuthToken, setAuthTokenSync } from "~/utils/auth";
 
 const LoginWithVk = ({ onToken }: { onToken: (v: string) => void }) => {
   const handlePress = async () => {
@@ -88,7 +88,7 @@ export default function Index() {
 
         <LoginWithVk
           onToken={(v) => {
-            setAuthToken(v);
+            setAuthTokenSync(v);
             setKey((v) => v + 1);
           }}
         />

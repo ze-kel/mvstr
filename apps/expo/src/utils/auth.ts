@@ -4,8 +4,12 @@ export const getAuthToken = () => {
   return SecureStore.getItem("auth_session_id");
 };
 
-export const setAuthToken = (token: string) => {
+export const setAuthTokenSync = (token: string) => {
   return SecureStore.setItem("auth_session_id", token);
+};
+
+export const setAuthToken = (token: string) => {
+  return SecureStore.setItemAsync("auth_session_id", token);
 };
 
 export const clearAuthTokenSync = () => {

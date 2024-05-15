@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
-import { OtpInput } from "react-native-otp-entry";
 import { useRouter } from "expo-router";
+import { TRPCClientError } from "@trpc/client";
+import OTPInputView from "@twotalltotems/react-native-otp-input";
 import { differenceInSeconds } from "date-fns";
-import { el } from "date-fns/locale";
 
 import { Button } from "~/app/_components/button";
 import { Input } from "~/app/_components/input";
-import { TitleUserHeader } from "~/app/_components/layoutElements";
 import { api } from "~/utils/api";
 import { setAuthToken } from "~/utils/auth";
 import { declOfNum } from "~/utils/declOfNum";
@@ -15,42 +14,58 @@ import { declOfNum } from "~/utils/declOfNum";
 const prefix = "+7";
 const mask = "+7 (###) ###-##-##";
 
-const PhoneNumberInput = () => {
-  const [raw, setRaw] = useState("");
+const regexNonNumbers = /[^0-9.]/g;
 
+const PhoneNumberInput = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) => {
   const transform = (raw: string) => {
     const noPrefix = raw.replace(prefix, "");
-    const numbers = noPrefix.replaceAll(/[^0-9.]/g, "").split("");
+    const numbers = noPrefix.replaceAll(regexNonNumbers, "").split("");
+
+    if (numbers.length > 10) {
+      numbers.splice(0, numbers.length - 10);
+    }
 
     const masked: string[] = [];
 
     for (const letter of mask) {
       if (letter === "#") {
         const next = numbers.shift();
-        masked.push(next);
+        masked.push(next!);
 
         if (!numbers.length) {
-          setRaw(masked.join(""));
-          return;
+          return masked.join("");
         }
       } else {
         masked.push(letter);
       }
     }
+    return masked.join("");
+  };
+
+  const [raw, setRaw] = useState(transform(value || ""));
+
+  const handler = (v: string) => {
+    const t = transform(v);
+
+    setRaw(t);
+    onChange(t.replaceAll(regexNonNumbers, ""));
   };
 
   return (
-    <View>
-      <Text>{raw}</Text>
-      <Input
-        placeholder={mask.replaceAll("#", "_")}
-        maxLength={mask.length}
-        keyboardType="number-pad"
-        className="mt-6"
-        value={raw}
-        onChangeText={(v) => transform(v)}
-      />
-    </View>
+    <Input
+      placeholder={mask.replaceAll("#", "_")}
+      maxLength={mask.length}
+      keyboardType="number-pad"
+      className="mt-6"
+      value={raw}
+      onChangeText={handler}
+    />
   );
 };
 
@@ -93,8 +108,8 @@ const Timer = ({
 };
 
 const PhoneLogin = () => {
-  const [phone, setPhone] = useState("79253181117");
-  const [code, setCode] = useState("");
+  const [phone, setPhone] = useState("");
+  const [error, setError] = useState("");
 
   const router = useRouter();
 
@@ -108,22 +123,28 @@ const PhoneLogin = () => {
     setRequestExpiration(res);
   };
 
-  const [result, setResult] = useState<any>();
-
   const handleValidateCode = async (code: string) => {
-    const res = await validateCode.mutateAsync({ phone, code });
-    setResult(res);
+    try {
+      const res = await validateCode.mutateAsync({ phone, code });
 
-    if (res.action === "register") {
-      router.navigate({
-        pathname: "/login/register/[tokenId]",
-        params: {
-          tokenId: res.token,
-        },
-      });
-    } else {
-      setAuthToken(res.token);
-      router.navigate("/home");
+      if (res.action === "register") {
+        router.navigate({
+          pathname: "/login/register/[tokenId]",
+          params: {
+            tokenId: res.token,
+          },
+        });
+      } else {
+        await setAuthToken(res.token);
+        router.push("/home");
+      }
+    } catch (e) {
+      if (e instanceof TRPCClientError) {
+        if (e.message === "Wrong code") {
+          console.log("aaa");
+          setError("Неверный код");
+        }
+      }
     }
   };
 
@@ -140,23 +161,28 @@ const PhoneLogin = () => {
           </Text>
 
           <View className="mt-5">
-            <OtpInput
-              numberOfDigits={6}
-              focusStickBlinkingDuration={1000}
-              onFilled={(text) => void handleValidateCode(text)}
-              theme={{
-                pinCodeContainerStyle: {
-                  borderWidth: 2,
-                  borderColor: "rgba(185, 184, 188, 1)",
-                },
-                pinCodeTextStyle: {
-                  fontFamily: "NeueMachina-Ultrabold",
-                  fontSize: 30,
-                  marginTop: 6,
-                },
+            <OTPInputView
+              autoFocusOnLoad
+              style={{ height: 100 }}
+              pinCount={6}
+              keyboardType="default"
+              codeInputFieldStyle={{
+                borderWidth: 2,
+                borderRadius: 10,
+                color: "rgba(61, 56, 73, 1)",
+                fontSize: 20,
+                fontFamily: "NeueMachina-Ultrabold",
+                borderColor: "rgba(185, 184, 188, 1)",
               }}
-              focusColor="rgba(61, 56, 73, 1)"
+              codeInputHighlightStyle={{ borderColor: "rgba(61, 56, 73, 1)" }}
+              onCodeFilled={(text) => void handleValidateCode(text)}
             />
+
+            {error && (
+              <Text className="textXL mt-2 text-center text-text-error">
+                Неверный код
+              </Text>
+            )}
 
             <Timer
               date={requestExpiration}
@@ -174,12 +200,8 @@ const PhoneLogin = () => {
         <Text className="headingL text-center text-[24px] leading-[28px]">
           Введите номер телефона
         </Text>
-        <Input
-          className="mt-6"
-          value={phone}
-          onChangeText={(v) => setPhone(v)}
-        />
-        <PhoneNumberInput />
+
+        <PhoneNumberInput value={phone} onChange={setPhone} />
         <Button variant={"stroke"} onPress={handleRequestCode} className="mt-4">
           Получить код
         </Button>
