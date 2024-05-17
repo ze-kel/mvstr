@@ -1,16 +1,6 @@
 import type { SvgProps } from "react-native-svg";
-import { useEffect } from "react";
-import {
-  FlatList,
-  Image,
-  Pressable,
-  RefreshControl,
-  Text,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import Svg, { Circle, ClipPath, Defs, G, Path } from "react-native-svg";
-import { LinearGradient } from "expo-linear-gradient";
 import { Link, useGlobalSearchParams } from "expo-router";
 import { format, isToday, setDefaultOptions } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -160,7 +150,7 @@ export default function Index() {
   const utils = api.useUtils();
   const { data, isFetching, isPending, error } =
     api.tasks.getTasksForEvent.useQuery({
-      id: eventId,
+      id: eventId!,
     });
 
   if (isPending) {

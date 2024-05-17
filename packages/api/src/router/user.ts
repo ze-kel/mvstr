@@ -88,10 +88,7 @@ export const userRouter = {
 
       if (
         request.code !== input.code.toUpperCase() &&
-        !(
-          env.MASTER_CODE.length &&
-          env.MASTER_CODE == input.code.toUpperCase()
-        )
+        !(env.MASTER_CODE.length && env.MASTER_CODE == input.code.toUpperCase())
       ) {
         throw new Error("Wrong code");
       }
@@ -104,7 +101,7 @@ export const userRouter = {
         where: eq(schema.userTable.phone, request.phone),
       });
 
-      if (user) {
+      if (user?.registered) {
         const session = await lucia.createSession(user.id, {});
         return {
           action: "auth" as const,
@@ -154,13 +151,23 @@ export const userRouter = {
         .delete(schema.phoneTokens)
         .where(eq(schema.phoneTokens.token, input.registrationToken));
 
-      await ctx.db.insert(schema.userTable).values({
-        id: userId,
-        firstName: input.firstName,
-        lastName: input.lastName,
-        phone: phoneData.phone,
-        gender: input.gender,
-      });
+      await ctx.db
+        .insert(schema.userTable)
+        .values({
+          id: userId,
+          firstName: input.firstName,
+          lastName: input.lastName,
+          phone: phoneData.phone,
+          gender: input.gender,
+        })
+        .onConflictDoUpdate({
+          target: schema.userTable.phone,
+          set: {
+            firstName: input.firstName,
+            lastName: input.lastName,
+            gender: input.gender,
+          },
+        });
 
       const session = await lucia.createSession(userId, {});
 

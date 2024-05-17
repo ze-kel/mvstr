@@ -6,12 +6,15 @@ import { Pool } from "pg";
 import * as z from "zod";
 
 import {
+  eventRelations,
   eventTable,
+  guestRelations,
   guestsTable,
   phoneTokenRequest,
   phoneTokens,
   sessionTable,
   taskTable,
+  userRelations,
   userTable,
   wishTable,
 } from "./schema";
@@ -41,6 +44,9 @@ const schema = {
   wishTable,
   phoneTokenRequest,
   phoneTokens,
+  userRelations,
+  eventRelations,
+  guestRelations,
 };
 
 const pool = new Pool({

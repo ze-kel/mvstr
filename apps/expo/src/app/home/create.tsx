@@ -4,6 +4,7 @@ import {
   GestureHandlerRootView,
   ScrollView,
 } from "react-native-gesture-handler";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -88,54 +89,51 @@ const Create = () => {
   };
 
   return (
-    <GestureHandlerRootView>
-      <SafeAreaView edges={["left", "right"]} className=" bg-surface-inverse">
-        <ScrollView>
-          <View className="mt-4 px-4 pb-32">
-            <Text className="headingM">Расскажите о вашем мероприятии</Text>
-            <Text className="subHeadingL mt-5">
-              Введите информацию о мероприятии
-            </Text>
-            <Text className="subHeadingM mt-5">Название мероприятия</Text>
-            <Input
-              className="mt-3"
-              placeholder="Название события"
-              value={title}
-              onChangeText={setTitle}
-            />
-            <Text className="subHeadingM mt-5">Выберите тип мероприятия</Text>
-            <Input
-              className="mt-3"
-              placeholder="Выберите тип мероприятия"
-              value={type}
-              onChangeText={setType}
-            />
-            <Text className="subHeadingM mt-5">Место проведения</Text>
-            <Input
-              className="mt-3"
-              placeholder="Введите адрес"
-              value={place}
-              onChangeText={setPlace}
-            />
+    <KeyboardAwareScrollView className=" bg-surface-inverse">
+      <View className="mt-4 px-4 pb-8">
+        <Text className="headingM">Расскажите о вашем мероприятии</Text>
+        <Text className="subHeadingL mt-5">
+          Введите информацию о мероприятии
+        </Text>
+        <Text className="subHeadingM mt-5">Название мероприятия</Text>
+        <Input
+          className="mt-3"
+          placeholder="Название события"
+          value={title}
+          onChangeText={setTitle}
+        />
+        <Text className="subHeadingM mt-5">Выберите тип мероприятия</Text>
+        <Input
+          className="mt-3"
+          placeholder="Выберите тип мероприятия"
+          value={type}
+          onChangeText={setType}
+        />
+        <Text className="subHeadingM mt-5">Место проведения</Text>
+        <Input
+          className="mt-3"
+          placeholder="Введите адрес"
+          value={place}
+          onChangeText={setPlace}
+        />
 
-            <Text className="subHeadingM mt-5">Дата и время начала</Text>
-            <DatePicker date={date} onChange={setDate} />
-            <Text className="subHeadingM mt-5">Опишите ваше мероприятите</Text>
-            <Input
-              className="mt-3 h-32"
-              placeholder="Расскажите подробнее о вашем мероприятии в пару предложений"
-              multiline
-              numberOfLines={4}
-              value={description}
-              onChangeText={setDescription}
-            />
-            <Button onPress={() => void create()} className="mt-4">
-              Создать
-            </Button>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </GestureHandlerRootView>
+        <Text className="subHeadingM mt-5">Дата и время начала</Text>
+        <DatePicker date={date} onChange={setDate} />
+        <Text className="subHeadingM mt-5">Опишите ваше мероприятите</Text>
+        <Input
+          className="mt-3 h-32"
+          placeholder="Расскажите подробнее о вашем мероприятии в пару предложений"
+          multiline
+          numberOfLines={4}
+          value={description}
+          onChangeText={setDescription}
+        />
+        <Button onPress={() => void create()} className="mt-4">
+          Создать
+        </Button>
+      </View>
+      <SafeAreaView />
+    </KeyboardAwareScrollView>
   );
 };
 

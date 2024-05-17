@@ -1,10 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
+import { generateId } from "lucia";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 import { schema } from "@acme/db";
 
+import type { IUser } from "./user";
 import { protectedProcedure } from "../trpc";
 
 export const ZNewEvent = z.object({
@@ -19,6 +21,8 @@ export const ZNewEvent = z.object({
 
 export type INewEvent = z.infer<typeof ZNewEvent>;
 export type IEvent = typeof schema.eventTable.$inferSelect;
+export type IGuest = typeof schema.guestsTable.$inferSelect;
+export type IGuestFull = IGuest & { user: IUser; event: IEvent };
 
 export const ZEventUpdate = ZNewEvent.partial();
 
@@ -82,4 +86,56 @@ export const eventsRouter = {
         ),
       );
   }),
+
+  getGuests: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const r1 = await ctx.db.query.guestsTable.findMany({
+        where: eq(schema.guestsTable.eventId, input),
+        with: {
+          user: true,
+          event: true,
+        },
+      });
+
+      // TODO: throw if user is not the one in ctx
+
+      return r1;
+    }),
+
+  addGuest: protectedProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+        phone: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const existingUser = await ctx.db.query.userTable.findFirst({
+        where: eq(schema.userTable.phone, input.phone),
+      });
+
+      if (existingUser) {
+        return await ctx.db.insert(schema.guestsTable).values({
+          eventId: input.eventId,
+          userId: existingUser.id,
+          role: "guest",
+        });
+      } else {
+        const userId = generateId(15);
+        const user = await ctx.db.insert(schema.userTable).values({
+          firstName: input.firstName,
+          lastName: input.lastName,
+          phone: input.phone,
+          id: userId,
+        });
+        return await ctx.db.insert(schema.guestsTable).values({
+          eventId: input.eventId,
+          userId: userId,
+          role: "guest",
+        });
+      }
+    }),
 } satisfies TRPCRouterRecord;

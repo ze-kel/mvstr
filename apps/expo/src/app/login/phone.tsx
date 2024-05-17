@@ -14,7 +14,7 @@ import { declOfNum } from "~/utils/declOfNum";
 const prefix = "+7";
 const mask = "+7 (###) ###-##-##";
 
-const regexNonNumbers = /[^0-9.]/g;
+export const regexNonNumbers = /[^0-9.]/g;
 
 const PhoneNumberInput = ({
   value,
@@ -136,7 +136,7 @@ const PhoneLogin = () => {
         });
       } else {
         await setAuthToken(res.token);
-        router.push("/home");
+        router.replace("/home");
       }
     } catch (e) {
       if (e instanceof TRPCClientError) {

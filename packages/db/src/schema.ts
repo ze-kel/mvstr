@@ -1,11 +1,12 @@
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { boolean, pgTableCreator, text, timestamp } from "drizzle-orm/pg-core";
 
 const pgTable = pgTableCreator((name) => `PBXKK_${name}`);
 
 export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
-  phone: text("phone"),
+  phone: text("phone").unique(),
   vkId: text("vk_id"),
   email: text("email"),
   firstName: text("first_name"),
@@ -15,7 +16,52 @@ export const userTable = pgTable("user", {
   gender: text("gender"),
   vkConnected: boolean("vk_connected"),
   vkAccessToken: text("vk_token"),
+  registered: boolean("registered"),
 });
+
+export const eventTable = pgTable("events", {
+  id: text("id").primaryKey(),
+  // id владельца и создателя
+  userId: text("userId")
+    .notNull()
+    .references(() => userTable.id),
+  name: text("name").notNull(),
+  type: text("type"),
+  place: text("place"),
+  date: timestamp("date"),
+  time: text("time"),
+  description: text("description"),
+  image: text("image"),
+});
+
+export const guestsTable = pgTable("guests", {
+  eventId: text("id")
+    .notNull()
+    .references(() => eventTable.id),
+  userId: text("user_id")
+    .notNull()
+    .references(() => userTable.id),
+  role: text("role").default("guest"),
+});
+
+export const userRelations = relations(userTable, ({ many }) => ({
+  events: many(guestsTable),
+}));
+
+export const eventRelations = relations(eventTable, ({ many }) => ({
+  guests: many(guestsTable),
+}));
+
+export const guestRelations = relations(guestsTable, ({ one }) => ({
+  event: one(eventTable, {
+    fields: [guestsTable.eventId],
+    references: [eventTable.id],
+  }),
+  user: one(userTable, {
+    fields: [guestsTable.userId],
+    references: [userTable.id],
+  }),
+}));
 
 export const phoneTokenRequest = pgTable("phoneverification", {
   phone: text("phone").primaryKey(),
@@ -59,31 +105,6 @@ export const taskTable = pgTable("tasks", {
   time: timestamp("time"),
   completed: boolean("completed"),
   parentId: text("parent_id").references((): AnyPgColumn => taskTable.id),
-});
-
-export const eventTable = pgTable("events", {
-  id: text("id").primaryKey(),
-  // id владельца и создателя
-  userId: text("userId")
-    .notNull()
-    .references(() => userTable.id),
-  name: text("name").notNull(),
-  type: text("type"),
-  place: text("place"),
-  date: timestamp("date"),
-  time: text("time"),
-  description: text("description"),
-  image: text("image"),
-});
-
-export const guestsTable = pgTable("guests", {
-  id: text("id").primaryKey(),
-  eventId: text("id")
-    .notNull()
-    .references(() => eventTable.id),
-  type: text("type"),
-  phone: text("phone"),
-  role: text("role").default("guest"),
 });
 
 export const wishTable = pgTable("wishes", {

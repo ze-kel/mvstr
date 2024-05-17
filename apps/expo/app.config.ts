@@ -16,6 +16,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   updates: {
     fallbackToCacheTimeout: 0,
+    url: "https://u.expo.dev/3f8ddbc0-d6a5-4830-998c-c30f44b773d8",
   },
   assetBundlePatterns: ["**/*"],
   ios: {
@@ -29,14 +30,27 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: "#1F104A",
     },
   },
-  // extra: {
-  //   eas: {
-  //     projectId: "your-eas-project-id",
-  //   },
-  // },
+  extra: {
+    eas: {
+      projectId: "3f8ddbc0-d6a5-4830-998c-c30f44b773d8",
+    },
+  },
+  runtimeVersion: {
+    policy: "appVersion",
+  },
   experiments: {
     tsconfigPaths: true,
     typedRoutes: true,
   },
-  plugins: ["expo-router", "expo-secure-store", "expo-font"],
+  plugins: [
+    "expo-router",
+    "expo-secure-store",
+    "expo-font",
+    [
+      "expo-contacts",
+      {
+        contactsPermission: "Allow $(PRODUCT_NAME) to access your contacts.",
+      },
+    ],
+  ],
 });

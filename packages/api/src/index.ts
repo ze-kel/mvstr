@@ -1,7 +1,7 @@
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 import type { AppRouter } from "./root";
-import type { IEvent, INewEvent } from "./router/events";
+import type { IEvent, IGuestFull, INewEvent } from "./router/events";
 import type { INewTask, ITask } from "./router/tasks";
 import type { IUser } from "./router/user";
 import type { INewWish, IWish } from "./router/wishlist.js";
@@ -45,4 +45,5 @@ export type {
   INewTask,
   IWish,
   INewWish,
+  IGuestFull,
 };

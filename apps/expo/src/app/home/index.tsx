@@ -1,18 +1,8 @@
 import type { SvgProps } from "react-native-svg";
-import {
-  FlatList,
-  Pressable,
-  RefreshControl,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { ClipPath, Defs, G, Path } from "react-native-svg";
-import {
-  Link,
-  Redirect,
-  useRootNavigationState,
-} from "expo-router";
+import { Link, Redirect, useRootNavigationState } from "expo-router";
 import { format, isToday, setDefaultOptions } from "date-fns";
 import { ru } from "date-fns/locale";
 
