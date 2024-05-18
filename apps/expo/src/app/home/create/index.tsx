@@ -92,65 +92,65 @@ const Create = () => {
   const [imageSelection, setImageSelection] = useState("Выбрать");
 
   return (
-    <Text className="subHeadingL mt-5">Введите информацию о мероприятии</Text>
-  );
+    <>
+      <View className="mt-4  pb-8">
+        <KeyboardAwareScrollView>
+          <View className="px-4">
+            <Text className="headingS">Расскажите о вашем мероприятии</Text>
 
-  return (
-    <KeyboardAwareScrollView className=" bg-surface-inverse">
-      <View className="mt-4 px-4 pb-8">
-        <Text className="headingM">Расскажите о вашем мероприятии</Text>
-        <Text className="subHeadingL mt-5">
-          Введите информацию о мероприятии
-        </Text>
+            <Text className="subHeadingL mt-5">
+              Введите информацию о мероприятии
+            </Text>
 
-        <RadioTabs
-          values={[
-            { value: "choice", label: "Выбрать" },
-            { value: "upload", label: "Загрузить" },
-          ]}
-          value={imageSelection}
-          onChange={setImageSelection}
-        />
+            <RadioTabs
+              values={[
+                { value: "choice", label: "Выбрать" },
+                { value: "upload", label: "Загрузить" },
+              ]}
+              value={imageSelection}
+              onChange={setImageSelection}
+            />
 
-        <Text className="subHeadingM mt-5">Название мероприятия</Text>
-        <Input
-          className="mt-3"
-          placeholder="Название события"
-          value={title}
-          onChangeText={setTitle}
-        />
-        <Text className="subHeadingM mt-5">Выберите тип мероприятия</Text>
-        <Input
-          className="mt-3"
-          placeholder="Выберите тип мероприятия"
-          value={type}
-          onChangeText={setType}
-        />
-        <Text className="subHeadingM mt-5">Место проведения</Text>
-        <Input
-          className="mt-3"
-          placeholder="Введите адрес"
-          value={place}
-          onChangeText={setPlace}
-        />
+            <Text className="subHeadingM mt-5">Название мероприятия</Text>
+            <Input
+              className="mt-3"
+              placeholder="Название события"
+              value={title}
+              onChangeText={setTitle}
+            />
+            <Text className="subHeadingM mt-5">Выберите тип мероприятия</Text>
+            <Input
+              className="mt-3"
+              placeholder="Выберите тип мероприятия"
+              value={type}
+              onChangeText={setType}
+            />
+            <Text className="subHeadingM mt-5">Место проведения</Text>
+            <Input
+              className="mt-3"
+              placeholder="Введите адрес"
+              value={place}
+              onChangeText={setPlace}
+            />
 
-        <Text className="subHeadingM mt-5">Дата и время начала</Text>
-        <DatePicker date={date} onChange={setDate} />
-        <Text className="subHeadingM mt-5">Опишите ваше мероприятите</Text>
-        <Input
-          className="mt-3 h-32"
-          placeholder="Расскажите подробнее о вашем мероприятии в пару предложений"
-          multiline
-          numberOfLines={4}
-          value={description}
-          onChangeText={setDescription}
-        />
-        <Button onPress={() => void create()} className="mt-4">
-          Создать
-        </Button>
+            <Text className="subHeadingM mt-5">Дата и время начала</Text>
+            <DatePicker date={date} onChange={setDate} />
+            <Text className="subHeadingM mt-5">Опишите ваше мероприятите</Text>
+            <Input
+              className="mt-3 h-32"
+              placeholder="Расскажите подробнее о вашем мероприятии в пару предложений"
+              multiline
+              numberOfLines={4}
+              value={description}
+              onChangeText={setDescription}
+            />
+            <Button onPress={() => void create()} className="mt-4">
+              Создать
+            </Button>
+          </View>
+        </KeyboardAwareScrollView>
       </View>
-      <SafeAreaView />
-    </KeyboardAwareScrollView>
+    </>
   );
 };
 

@@ -28,7 +28,7 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
               params: { eventId: eventId, wishId: wish.id },
             }
           : {
-              pathname: "/home/wishlist/modal/[wishId]",
+              pathname: "/home/main/wishlist/modal/[wishId]",
               params: { wishId: wish.id },
             }
       }
@@ -88,7 +88,7 @@ export const WishlistHeader = () => {
                 params: { eventId: eventId, wishId: "create" },
               }
             : {
-                pathname: "/home/wishlist/modal/[wishId]",
+                pathname: "/home/main/wishlist/modal/[wishId]",
 
                 params: { wishId: "create" },
               }

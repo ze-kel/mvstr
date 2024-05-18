@@ -1,11 +1,9 @@
 import { FlatList, RefreshControl } from "react-native";
 import { useGlobalSearchParams } from "expo-router";
 
-
 import Spinner from "~/app/_components/spinner";
+import { WishItem, WishlistHeader } from "~/app/home/main/wishlist";
 import { api } from "~/utils/api";
-import { WishlistHeader, WishItem } from "~/app/home/wishlist";
-
 
 export default function Index() {
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();

@@ -207,7 +207,7 @@ const EditMode = () => {
       });
     } else {
       router.navigate({
-        pathname: "/home/wishlist/",
+        pathname: "/home/main/wishlist/",
       });
     }
   };
@@ -234,7 +234,7 @@ const EditMode = () => {
     return (
       <Redirect
         href={{
-          pathname: "/home/wishlist/",
+          pathname: "/home/main/wishlist/",
           params: { eventId },
         }}
       ></Redirect>
@@ -268,7 +268,7 @@ const CreateMode = () => {
       });
     } else {
       router.replace({
-        pathname: "/home/wishlist",
+        pathname: "/home/main/wishlist",
       });
     }
   };
