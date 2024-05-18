@@ -12,6 +12,7 @@ import { add, format } from "date-fns";
 
 import { Button } from "~/app/_components/button";
 import { Input } from "~/app/_components/input";
+import { RadioTabs } from "~/app/_components/radioTabs";
 import { api } from "~/utils/api";
 
 const DatePicker = ({
@@ -88,6 +89,12 @@ const Create = () => {
     }
   };
 
+  const [imageSelection, setImageSelection] = useState("Выбрать");
+
+  return (
+    <Text className="subHeadingL mt-5">Введите информацию о мероприятии</Text>
+  );
+
   return (
     <KeyboardAwareScrollView className=" bg-surface-inverse">
       <View className="mt-4 px-4 pb-8">
@@ -95,6 +102,16 @@ const Create = () => {
         <Text className="subHeadingL mt-5">
           Введите информацию о мероприятии
         </Text>
+
+        <RadioTabs
+          values={[
+            { value: "choice", label: "Выбрать" },
+            { value: "upload", label: "Загрузить" },
+          ]}
+          value={imageSelection}
+          onChange={setImageSelection}
+        />
+
         <Text className="subHeadingM mt-5">Название мероприятия</Text>
         <Input
           className="mt-3"

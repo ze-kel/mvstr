@@ -16,42 +16,44 @@ const mask = "+7 (###) ###-##-##";
 
 export const regexNonNumbers = /[^0-9.]/g;
 
-const PhoneNumberInput = ({
+export const transformNumber = (raw: string) => {
+  const noPrefix = raw.replace(prefix, "");
+  const numbers = noPrefix.replaceAll(regexNonNumbers, "").split("");
+
+  if (numbers.length > 10) {
+    numbers.splice(0, numbers.length - 10);
+  }
+
+  const masked: string[] = [];
+
+  for (const letter of mask) {
+    if (letter === "#") {
+      const next = numbers.shift();
+      masked.push(next!);
+
+      if (!numbers.length) {
+        return masked.join("");
+      }
+    } else {
+      masked.push(letter);
+    }
+  }
+  return masked.join("");
+};
+
+export const PhoneNumberInput = ({
   value,
   onChange,
+  className,
 }: {
+  className?: string;
   value: string;
   onChange: (v: string) => void;
 }) => {
-  const transform = (raw: string) => {
-    const noPrefix = raw.replace(prefix, "");
-    const numbers = noPrefix.replaceAll(regexNonNumbers, "").split("");
-
-    if (numbers.length > 10) {
-      numbers.splice(0, numbers.length - 10);
-    }
-
-    const masked: string[] = [];
-
-    for (const letter of mask) {
-      if (letter === "#") {
-        const next = numbers.shift();
-        masked.push(next!);
-
-        if (!numbers.length) {
-          return masked.join("");
-        }
-      } else {
-        masked.push(letter);
-      }
-    }
-    return masked.join("");
-  };
-
-  const [raw, setRaw] = useState(transform(value || ""));
+  const [raw, setRaw] = useState(transformNumber(value || ""));
 
   const handler = (v: string) => {
-    const t = transform(v);
+    const t = transformNumber(v);
 
     setRaw(t);
     onChange(t.replaceAll(regexNonNumbers, ""));
@@ -62,7 +64,7 @@ const PhoneNumberInput = ({
       placeholder={mask.replaceAll("#", "_")}
       maxLength={mask.length}
       keyboardType="number-pad"
-      className="mt-6"
+      className={className}
       value={raw}
       onChangeText={handler}
     />
@@ -201,7 +203,7 @@ const PhoneLogin = () => {
           Введите номер телефона
         </Text>
 
-        <PhoneNumberInput value={phone} onChange={setPhone} />
+        <PhoneNumberInput className="mt-6" value={phone} onChange={setPhone} />
         <Button variant={"stroke"} onPress={handleRequestCode} className="mt-4">
           Получить код
         </Button>

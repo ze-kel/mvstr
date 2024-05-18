@@ -53,23 +53,27 @@ const ConctactItem = ({
         <Text className="subHeadingL">
           {item.firstName} {item.lastName}
         </Text>
-        <Text className="textXL">{n}</Text>
+        <Text className="textXL">
+          {n ? n : "Номер отсутствует или невалидный"}
+        </Text>
       </View>
 
-      <Button
-        onPress={() => {
-          if (!n) return;
-
-          void addHandler({
-            firstName: item.firstName || "",
-            lastName: item.lastName || "",
-            phone: n,
-          });
-        }}
-        variant={"stroke"}
-      >
-        Добавить
-      </Button>
+      {n && (
+        <Button
+          onPress={() => {
+            if (!n) return;
+            void addHandler({
+              firstName: item.firstName || "",
+              lastName: item.lastName || "",
+              phone: n,
+              gender: "",
+            });
+          }}
+          variant={"stroke"}
+        >
+          Добавить
+        </Button>
+      )}
     </View>
   );
 };
@@ -80,10 +84,7 @@ export const ContactList = ({
   addHandler: (c: ToAdd) => Promise<void>;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [list, setList] = useState<Contacts.Contact[]>([
-    { id: "aa", name: "asaa", contactType: "person", firstName: "aaa" },
-    { id: "bbb", name: "asass", contactType: "person", firstName: "bbb" },
-  ]);
+  const [list, setList] = useState<Contacts.Contact[]>([]);
 
   const gs = async () => {
     setIsLoading(true);
@@ -106,19 +107,6 @@ export const ContactList = ({
             await gs();
           }}
         />
-      }
-      ListHeaderComponent={
-        <View className="px-4" style={{}}>
-          <Text
-            className="pb-4 pt-7"
-            style={{
-              fontSize: 22,
-              fontFamily: "NeueMachina-Ultrabold",
-            }}
-          >
-            Контакты
-          </Text>
-        </View>
       }
       keyExtractor={(item) => item.name + item.id}
       renderItem={(v) => <ConctactItem addHandler={addHandler} item={v.item} />}

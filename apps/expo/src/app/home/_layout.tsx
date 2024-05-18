@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs } from "expo-router";
+import { Stack, Tabs, useRouter } from "expo-router";
 
 import {
   IconAll,
@@ -11,9 +11,12 @@ import { TitleUserHeader } from "~/app/_components/layoutElements";
 import { IconWrapper } from "~/app/event/[eventId]/_layout";
 
 export default function TabLayout() {
+  const router = useRouter();
+
   return (
     <>
       <TitleUserHeader forceTitle />
+
       <Tabs
         sceneContainerStyle={{
           overflow: "hidden",
@@ -58,30 +61,20 @@ export default function TabLayout() {
             ),
           }}
         />
+
         <Tabs.Screen
           name="create"
+          listeners={{
+            tabPress: (e) => {
+              e.preventDefault();
+              router.push("/home/create/modal");
+            },
+          }}
           options={{
             tabBarLabel: () => null,
             tabBarIcon: ({ focused }) => (
               <IconWrapper>
                 <IconPlus
-                  width={20}
-                  height={20}
-                  fill={
-                    focused ? "rgba(86, 58, 220, 1)" : "rgba(61, 56, 73, 1)"
-                  }
-                />
-              </IconWrapper>
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="people"
-          options={{
-            tabBarLabel: () => null,
-            tabBarIcon: ({ focused }) => (
-              <IconWrapper>
-                <IconPeople
                   width={20}
                   height={20}
                   fill={

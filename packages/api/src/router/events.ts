@@ -109,6 +109,7 @@ export const eventsRouter = {
         eventId: z.string(),
         firstName: z.string().optional(),
         lastName: z.string().optional(),
+        gender: z.string().optional(),
         phone: z.string(),
       }),
     )
@@ -130,6 +131,7 @@ export const eventsRouter = {
           lastName: input.lastName,
           phone: input.phone,
           id: userId,
+          gender: input.gender,
         });
         return await ctx.db.insert(schema.guestsTable).values({
           eventId: input.eventId,

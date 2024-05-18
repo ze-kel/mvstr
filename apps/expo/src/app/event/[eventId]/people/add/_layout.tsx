@@ -10,6 +10,7 @@ export default function Layout() {
           borderTopLeftRadius: 28,
           borderTopRightRadius: 28,
           justifyContent: "center",
+          backgroundColor: "white",
         },
       }}
     ></Stack>

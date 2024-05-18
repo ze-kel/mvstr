@@ -3,12 +3,11 @@ import { Pressable, SafeAreaView, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useGlobalSearchParams } from "expo-router";
-import DefaultBoy from "@assets/defaultBoy.png";
-import DefaultGirl from "@assets/defaultGirl.png";
 import Logo from "@assets/logo.png";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 
 import { Button } from "~/app/_components/button";
+import { UserAvatar } from "~/app/_components/userAvatar";
 import { api } from "~/utils/api";
 import { clearAuthToken } from "~/utils/auth";
 import { useHandleError } from "~/utils/useHandleError";
@@ -36,29 +35,16 @@ export const UserMenu = () => {
   return (
     <>
       <Pressable onPress={handlePresentModalPress}>
-        {u.data.profileImage?.length ? (
-          <Image
-            source={{ uri: u.data.profileImage }}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 12,
-              resizeMode: "contain",
-              display: "flex",
-            }}
-          />
-        ) : (
-          <Image
-            source={u.data.gender === "girl" ? DefaultGirl : DefaultBoy}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 12,
-              resizeMode: "contain",
-              display: "flex",
-            }}
-          />
-        )}
+        <UserAvatar
+          user={u.data}
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 12,
+            resizeMode: "contain",
+            display: "flex",
+          }}
+        />
       </Pressable>
       <BottomSheetModal
         ref={bottomSheetModalRef}
