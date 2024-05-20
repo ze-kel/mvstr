@@ -69,3 +69,41 @@ export const IconCheck = React.forwardRef<Svg, SvgProps>(
     );
   },
 );
+
+export const IconChevronLeft = React.forwardRef<Svg, SvgProps>(
+  ({ ...props }, ref) => {
+    return (
+      <Svg ref={ref} {...props} viewBox="0 0 20 20">
+        <Path d="M9.13 10.295a.417.417 0 010-.59l3.822-3.82a1.25 1.25 0 10-1.767-1.77L7.363 7.938a2.92 2.92 0 000 4.125l3.822 3.822a1.25 1.25 0 001.768-1.768L9.13 10.295z" />
+      </Svg>
+    );
+  },
+);
+
+export const IconCross = React.forwardRef<Svg, SvgProps>(
+  ({ ...props }, ref) => {
+    return (
+      <Svg ref={ref} {...props} viewBox="0 0 20 20">
+        <Path d="M2.293 16.293a1 1 0 001.414 1.414l6.01-6.01a.4.4 0 01.566 0l6.01 6.01a1 1 0 101.414-1.414l-6.01-6.01a.4.4 0 010-.566l6.01-6.01a1 1 0 10-1.414-1.414l-6.01 6.01a.4.4 0 01-.566 0l-6.01-6.01a1 1 0 10-1.414 1.414l6.01 6.01a.4.4 0 010 .566l-6.01 6.01z" />
+      </Svg>
+    );
+  },
+);
+
+export const IconTime = React.forwardRef<Svg, SvgProps>(({ ...props }, ref) => {
+  return (
+    <Svg ref={ref} {...props} viewBox="0 0 20 20">
+      <G clipPath="url(#clip0_191_2136)">
+        <Path
+          d="M10 0C4.486 0 0 4.486 0 10s4.486 10 10 10 10-4.486 10-10S15.514 0 10 0zm2.083 13.608a.832.832 0 01-1.138-.305l-1.667-2.886A.83.83 0 019.167 10V5a.833.833 0 111.666 0v4.777l1.555 2.693a.834.834 0 01-.305 1.138z"
+          fill="#000"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="clip0_191_2136">
+          <Path fill="#fff" d="M0 0H20V20H0z" />
+        </ClipPath>
+      </Defs>
+    </Svg>
+  );
+});

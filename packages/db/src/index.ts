@@ -16,6 +16,8 @@ import {
   taskTable,
   userRelations,
   userTable,
+  wishConnectionsTable,
+  wishRelations,
   wishTable,
 } from "./schema";
 
@@ -47,6 +49,8 @@ const schema = {
   userRelations,
   eventRelations,
   guestRelations,
+  wishConnectionsTable,
+  wishRelations,
 };
 
 const pool = new Pool({
@@ -58,6 +62,7 @@ const db = drizzle(pool, { schema });
 if (process.env.MIGRATE === "true") {
   void migrate(db, { migrationsFolder: "./drizzle" });
 }
+
 
 const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
 

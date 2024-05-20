@@ -13,7 +13,7 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
-        name="modal"
+        name="item"
         options={{
           headerShown: false,
           presentation: "modal",

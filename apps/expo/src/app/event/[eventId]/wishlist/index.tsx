@@ -1,40 +1,60 @@
 import { FlatList, RefreshControl } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalSearchParams } from "expo-router";
 
+import { PageHeader } from "~/app/_components/layoutElements";
 import Spinner from "~/app/_components/spinner";
-import { WishItem, WishlistHeader } from "~/app/home/main/wishlist";
+import { WishItem } from "~/app/home/main/wishlist";
 import { api } from "~/utils/api";
 
-export default function Index() {
+export default function Index({ noHeader }: { noHeader?: boolean }) {
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
 
   const utils = api.useUtils();
   const { data, isFetching, error, isPending } =
     api.wish.getAllWishes.useQuery();
 
-  if (isPending) {
+  const eventWishes = api.events.getWishes.useQuery(eventId || "");
+
+  if (isPending || eventWishes.isPending) {
     return <Spinner />;
   }
 
+  const inEvent = data?.filter((v) => {
+    if (!eventWishes.data) return false;
+
+    return eventWishes.data.includes(v.id);
+  });
+
   return (
-    <FlatList
-      className="pt-7"
-      data={data}
-      refreshControl={
-        <RefreshControl
-          refreshing={isFetching}
-          onRefresh={async () => {
-            await utils.wish.getAllWishes.refetch();
+    <>
+      {!noHeader && (
+        <PageHeader
+          title="Вишлист для события"
+          buttonHref={{
+            pathname: "/event/[eventId]/wishlist/list",
+            params: { eventId },
           }}
         />
-      }
-      horizontal={false}
-      numColumns={2}
-      columnWrapperClassName="justify-between"
-      contentContainerClassName="mt-3 flex flex-col gap-2"
-      ListHeaderComponent={WishlistHeader}
-      keyExtractor={(item) => item.id}
-      renderItem={(v) => <WishItem wish={v.item} />}
-    ></FlatList>
+      )}
+      <FlatList
+        data={inEvent}
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching}
+            onRefresh={async () => {
+              await utils.wish.getAllWishes.refetch();
+              await eventWishes.refetch();
+            }}
+          />
+        }
+        numColumns={2}
+        ListFooterComponent={() => <SafeAreaView />}
+        columnWrapperClassName="justify-between"
+        contentContainerClassName="mt-3 flex flex-col gap-2 pb-4"
+        keyExtractor={(item) => item.id}
+        renderItem={(v) => <WishItem wish={v.item} />}
+      ></FlatList>
+    </>
   );
 }

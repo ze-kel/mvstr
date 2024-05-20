@@ -13,7 +13,23 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
-        name="modal"
+        name="item"
+        options={{
+          headerShown: false,
+          presentation: "modal",
+          contentStyle: {
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
+            padding: 0,
+            flex: 1,
+            margin: 0,
+            justifyContent: "center",
+            backgroundColor: "transparent",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="list"
         options={{
           headerShown: false,
           presentation: "modal",

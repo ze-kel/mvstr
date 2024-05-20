@@ -1,20 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { useMemo, useState } from "react";
-import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
-import * as Svg from "react-native-svg";
-import { Image } from "expo-image";
-import { Link, useGlobalSearchParams, useRouter } from "expo-router";
+import { FlatList, RefreshControl, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useGlobalSearchParams, useRouter } from "expo-router";
+import PeopleEmpty from "@assets/defImages/people_empty.png";
 
-import type { IGuestFull, IWish } from "@acme/api";
+import type { IGuestFull } from "@acme/api";
 
 import { Button } from "~/app/_components/button";
-import { IconPlus } from "~/app/_components/icons";
 import { Input } from "~/app/_components/input";
+import { EmptyList, PageHeader } from "~/app/_components/layoutElements";
 import Spinner from "~/app/_components/spinner";
 import { UserAvatar } from "~/app/_components/userAvatar";
-import { transformNumber } from "~/app/login/phone";
 import { api } from "~/utils/api";
 
 const mask = "+# (###) ###-##-##";
@@ -31,7 +27,7 @@ const maskDBNumber = (s: string) => {
   return m;
 };
 
-export const GuestItem = ({ guest }: { guest: IGuestFull }) => {
+export const GuestItem = ({ guest }: { guest: Omit<IGuestFull, "event"> }) => {
   const { eventId } = useGlobalSearchParams<{ eventId?: string }>();
 
   return (
@@ -65,38 +61,6 @@ export const GuestItem = ({ guest }: { guest: IGuestFull }) => {
   );
 };
 
-export const GuestListHeader = () => {
-  const { eventId } = useGlobalSearchParams<{ eventId: string }>();
-
-  return (
-    <View className="my-4 flex flex-row items-center justify-between px-4">
-      <View>
-        <Text
-          className=""
-          style={{
-            fontSize: 22,
-            fontFamily: "NeueMachina-Ultrabold",
-          }}
-        >
-          Гости на мероприятии
-        </Text>
-      </View>
-
-      <Link
-        asChild
-        href={{
-          pathname: "/event/[eventId]/people/add",
-          params: { eventId: eventId, wishId: "create" },
-        }}
-      >
-        <Button size="sIcon" icon className="items-center">
-          <IconPlus width={18} height={18} fill={"white"} />
-        </Button>
-      </Link>
-    </View>
-  );
-};
-
 export default function Index() {
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
 
@@ -108,7 +72,7 @@ export default function Index() {
   }
 
   const utils = api.useUtils();
-  const { data, isFetching, error, isPending } =
+  const { data, isFetching, error, isPending, refetch } =
     api.events.getGuests.useQuery(eventId);
 
   const [searchQ, setSearchQ] = useState("");
@@ -129,7 +93,13 @@ export default function Index() {
 
   return (
     <>
-      <GuestListHeader />
+      <PageHeader
+        title="Гости на мероприятии"
+        buttonHref={{
+          pathname: "/event/[eventId]/people/add",
+          params: { eventId: eventId, wishId: "create" },
+        }}
+      />
       <View className="mx-4">
         <Input
           value={searchQ}
@@ -139,18 +109,36 @@ export default function Index() {
         />
       </View>
       <FlatList
-        className="pt-4"
+        className="pb-4"
         data={filtered}
         refreshControl={
           <RefreshControl
             refreshing={isFetching}
             onRefresh={async () => {
-              await utils.wish.getAllWishes.refetch();
+              await refetch();
             }}
           />
         }
+        ListEmptyComponent={
+          <EmptyList
+            image={PeopleEmpty}
+            text={
+              searchQ ? "Таких гостей не приглашено" : "Вы не добавили гостей"
+            }
+            subtext={
+              searchQ ? "Но можно пригласить" : "Пора пригласить кого-нибудь"
+            }
+            buttonText="Добавить гостей"
+            buttonHref={{
+              pathname: "/event/[eventId]/people/add",
+              params: { eventId: eventId, wishId: "create" },
+            }}
+          />
+        }
+        
         horizontal={false}
         keyExtractor={(item) => item.userId}
+        ListFooterComponent={() => <SafeAreaView />}
         renderItem={(v) => (
           <>
             {v.index > 0 && (

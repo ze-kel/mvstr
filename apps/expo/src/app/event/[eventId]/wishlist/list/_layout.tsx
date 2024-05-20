@@ -13,7 +13,7 @@ export default function Layout() {
           flex: 1,
           margin: 0,
           justifyContent: "center",
-          backgroundColor: "transparent",
+          backgroundColor: "rgba(254, 254, 254, 1)",
         },
       }}
     ></Stack>

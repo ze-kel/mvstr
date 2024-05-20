@@ -17,8 +17,10 @@ export interface ToAdd {
 }
 
 const AddForm = ({
+  included,
   addHandler,
 }: {
+  included: string[];
   addHandler: (c: ToAdd, dismiss?: boolean) => Promise<void>;
 }) => {
   const [firstName, setFirstName] = useState("");
@@ -26,7 +28,10 @@ const AddForm = ({
   const [gender, setGender] = useState("female");
   const [phone, setPhone] = useState("");
 
-  const canSubmit = firstName.length && lastName.length && phone.length === 11;
+  const alreadyThere = included.includes(phone);
+
+  const canSubmit =
+    firstName.length && lastName.length && phone.length === 11 && !alreadyThere;
 
   return (
     <View className="px-4">
@@ -59,7 +64,7 @@ const AddForm = ({
         variant={"stroke"}
         disabled={!canSubmit}
       >
-        Добавить
+        {alreadyThere ? "Номер уже добавлен" : "Добавить"}
       </Button>
     </View>
   );
@@ -80,6 +85,8 @@ const CreationModal = () => {
     },
   });
 
+  const { data } = api.events.getGuests.useQuery(eventId || "");
+
   const addHandler = async (c: ToAdd, dismiss?: boolean) => {
     if (!eventId) return;
     await m.mutateAsync({ ...c, eventId });
@@ -93,6 +100,8 @@ const CreationModal = () => {
   };
 
   const [mode, setMode] = useState("form");
+
+  const inc = (data?.map((v) => v.user.phone) as string[]) || [];
 
   return (
     <View className="h-full">
@@ -118,9 +127,9 @@ const CreationModal = () => {
       </View>
 
       {mode === "form" ? (
-        <AddForm addHandler={addHandler} />
+        <AddForm included={inc} addHandler={addHandler} />
       ) : (
-        <ContactList addHandler={addHandler} />
+        <ContactList included={inc} addHandler={addHandler} />
       )}
     </View>
   );

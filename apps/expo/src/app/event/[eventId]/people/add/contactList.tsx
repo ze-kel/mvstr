@@ -4,6 +4,7 @@ import * as Contacts from "expo-contacts";
 
 import type { ToAdd } from "~/app/event/[eventId]/people/add";
 import { Button } from "~/app/_components/button";
+import { EmptyList } from "~/app/_components/layoutElements";
 import { regexNonNumbers } from "~/app/login/phone";
 
 const getContacts = async () => {
@@ -41,11 +42,15 @@ const verifyNumber = (n?: string) => {
 const ConctactItem = ({
   item,
   addHandler,
+  included,
 }: {
+  included: string[];
   item: Contacts.Contact;
   addHandler: (c: ToAdd) => Promise<void>;
 }) => {
   const n = verifyNumber(item.phoneNumbers?.map((v) => v.digits)[0]);
+
+  const inc = included.includes(n || "none");
 
   return (
     <View className="flex flex-row justify-between gap-4 px-4 py-2">
@@ -69,9 +74,10 @@ const ConctactItem = ({
               gender: "",
             });
           }}
+          disabled={inc}
           variant={"stroke"}
         >
-          Добавить
+          {inc ? "Добавлен" : "Добавить"}
         </Button>
       )}
     </View>
@@ -79,8 +85,10 @@ const ConctactItem = ({
 };
 
 export const ContactList = ({
+  included,
   addHandler,
 }: {
+  included: string[];
   addHandler: (c: ToAdd) => Promise<void>;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -108,8 +116,22 @@ export const ContactList = ({
           }}
         />
       }
+      ListEmptyComponent={
+        <EmptyList
+          text={"Нет контактов"}
+          subtext={
+            "Либо ваш список контактов пуст, либо у нас нет к ним доступа"
+          }
+        />
+      }
       keyExtractor={(item) => item.name + item.id}
-      renderItem={(v) => <ConctactItem addHandler={addHandler} item={v.item} />}
+      renderItem={(v) => (
+        <ConctactItem
+          included={included}
+          addHandler={addHandler}
+          item={v.item}
+        />
+      )}
     ></FlatList>
   );
 };

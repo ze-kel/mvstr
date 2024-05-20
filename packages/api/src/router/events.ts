@@ -7,7 +7,7 @@ import { z } from "zod";
 import { schema } from "@acme/db";
 
 import type { IUser } from "./user";
-import { protectedProcedure } from "../trpc";
+import { protectedProcedure, publicProcedure } from "../trpc";
 
 export const ZNewEvent = z.object({
   name: z.string(),
@@ -20,7 +20,9 @@ export const ZNewEvent = z.object({
 });
 
 export type INewEvent = z.infer<typeof ZNewEvent>;
-export type IEvent = typeof schema.eventTable.$inferSelect;
+export type IEvent = typeof schema.eventTable.$inferSelect & {
+  guests: IGuestFull[];
+};
 export type IGuest = typeof schema.guestsTable.$inferSelect;
 export type IGuestFull = IGuest & { user: IUser; event: IEvent };
 
@@ -30,6 +32,9 @@ export const eventsRouter = {
   list: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.eventTable.findMany({
       where: eq(schema.eventTable.userId, ctx.user.id),
+      with: {
+        guests: { with: { user: true } },
+      },
     });
   }),
 
@@ -139,5 +144,46 @@ export const eventsRouter = {
           role: "guest",
         });
       }
+    }),
+
+  getWishes: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const res = await ctx.db.query.wishConnectionsTable.findMany({
+      where: eq(schema.wishConnectionsTable.eventId, input),
+    });
+
+    return res.map((v) => v.wishId) as string[];
+  }),
+
+  addWish: protectedProcedure
+    .input(
+      z.object({
+        event: z.string(),
+        wish: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.insert(schema.wishConnectionsTable).values({
+        id: uuidv4(),
+        eventId: input.event,
+        wishId: input.wish,
+      });
+    }),
+
+  removeWish: protectedProcedure
+    .input(
+      z.object({
+        event: z.string(),
+        wish: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .delete(schema.wishConnectionsTable)
+        .where(
+          and(
+            eq(schema.wishConnectionsTable.eventId, input.event),
+            eq(schema.wishConnectionsTable.wishId, input.wish),
+          ),
+        );
     }),
 } satisfies TRPCRouterRecord;

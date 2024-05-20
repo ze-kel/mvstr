@@ -42,6 +42,11 @@ export const guestsTable = pgTable("guests", {
     .notNull()
     .references(() => userTable.id),
   role: text("role").default("guest"),
+  reminderDate: timestamp("reminder_date", {
+    withTimezone: true,
+    mode: "date",
+  }),
+  status: text("status"),
 });
 
 export const userRelations = relations(userTable, ({ many }) => ({
@@ -50,6 +55,7 @@ export const userRelations = relations(userTable, ({ many }) => ({
 
 export const eventRelations = relations(eventTable, ({ many }) => ({
   guests: many(guestsTable),
+  wishes: many(wishConnectionsTable),
 }));
 
 export const guestRelations = relations(guestsTable, ({ one }) => ({
@@ -62,6 +68,33 @@ export const guestRelations = relations(guestsTable, ({ one }) => ({
     references: [userTable.id],
   }),
 }));
+
+export const wishConnectionsTable = pgTable("wishconnections", {
+  id: text("id").primaryKey(),
+  wishId: text("wish_id").references(() => wishTable.id),
+  eventId: text("event_id").references(() => eventTable.id),
+});
+
+export const wishRelations = relations(wishConnectionsTable, ({ one }) => ({
+  event: one(eventTable, {
+    fields: [wishConnectionsTable.eventId],
+    references: [eventTable.id],
+  }),
+  wish: one(wishTable, {
+    fields: [wishConnectionsTable.wishId],
+    references: [wishTable.id],
+  }),
+}));
+
+export const wishTable = pgTable("wishes", {
+  id: text("id").primaryKey(),
+  userId: text("userId").references(() => userTable.id),
+  link: text("link"),
+  image: text("image_url"),
+  title: text("title"),
+  price: text("price"),
+  description: text("descriptions"),
+});
 
 export const phoneTokenRequest = pgTable("phoneverification", {
   phone: text("phone").primaryKey(),
@@ -105,14 +138,4 @@ export const taskTable = pgTable("tasks", {
   time: timestamp("time"),
   completed: boolean("completed"),
   parentId: text("parent_id").references((): AnyPgColumn => taskTable.id),
-});
-
-export const wishTable = pgTable("wishes", {
-  id: text("id").primaryKey(),
-  userId: text("userId").references(() => userTable.id),
-  link: text("link"),
-  image: text("image_url"),
-  title: text("title"),
-  price: text("price"),
-  description: text("descriptions"),
 });

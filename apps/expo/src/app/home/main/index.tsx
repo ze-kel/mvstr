@@ -2,13 +2,18 @@ import type { SvgProps } from "react-native-svg";
 import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { ClipPath, Defs, G, Path } from "react-native-svg";
+import { Image } from "expo-image";
 import { Link, Redirect, useRootNavigationState } from "expo-router";
+import EventsEmpty from "@assets/defImages/events_empty.png";
 import { format, isToday, setDefaultOptions } from "date-fns";
 import { ru } from "date-fns/locale";
 
 import type { IEvent, IUser } from "@acme/api";
 
+import { EventAvatar } from "~/app/_components/eventAvatar";
+import { EmptyList, PageHeader } from "~/app/_components/layoutElements";
 import Spinner from "~/app/_components/spinner";
+import { UserAvatar } from "~/app/_components/userAvatar";
 import { api } from "~/utils/api";
 import { getAuthToken } from "~/utils/auth";
 
@@ -27,43 +32,88 @@ const IconCalendar = (props: SvgProps) => (
   </Svg>
 );
 
+const MicroGuests = ({ guests }: { guests: IEvent["guests"] }) => {
+  if (!guests.length) return null;
+
+  const firstThree = guests.slice(0, 3);
+
+  return (
+    <View className="flex flex-row">
+      {firstThree.map((v) => (
+        <View key={v.userId} className="w-[14px]">
+          <UserAvatar
+            user={v.user}
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: 8,
+              borderWidth: 2,
+              borderColor: "rgba(254, 254, 254, 1)",
+              resizeMode: "contain",
+              display: "flex",
+            }}
+          />
+        </View>
+      ))}
+      {guests.length > 3 && (
+        <View className="flex w-[24px] items-center justify-center rounded-lg bg-surface-inverse">
+          <Text
+            style={{ fontSize: 10, lineHeight: 14, fontFamily: "Nunito-Bold" }}
+          >
+            +{guests.length - 3}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+};
+
 const EventItem = ({ event }: { event: IEvent }) => {
   const today = event.date && isToday(event.date);
 
   return (
     <Link
       href={{
+        // pathname: "home/create/third/[eventId]",
         pathname: "/event/[eventId]/",
         params: { eventId: event.id },
       }}
       asChild
     >
       <Pressable>
-        <View className="px-4">
-          <View className="mt-2 flex flex-row items-center rounded-xl bg-surface-secondary p-3">
-            <View className="mt-2 h-11 w-11"></View>
-            <View className="flex flex-col gap-1.5">
-              <Text className="subHeadingL">{event.name}</Text>
-              <View className="flex flex-row items-center gap-1">
-                <IconCalendar
-                  fill={
-                    today ? "rgba(33, 186, 114, 1)" : "rgba(86, 58, 220, 1)"
-                  }
+        <View className="px-3">
+          <View className="mt-2 flex  flex-row  items-center justify-between rounded-[20px] bg-surface-secondary  p-3">
+            <View className="flex flex-row items-center gap-2 ">
+              <View className="">
+                <EventAvatar
+                  image={event.image || ""}
+                  style={{ width: 44, height: 44, borderRadius: 12 }}
                 />
-                <Text
-                  style={{
-                    fontFamily: "Nunito-Bold",
-                    fontSize: 10,
-                    lineHeight: 14,
-                    color: today
-                      ? "rgba(33, 186, 114, 1)"
-                      : "rgba(86, 58, 220, 1)",
-                  }}
-                >
-                  {event.date ? format(event.date, "d MMMM") : "Без даты"}
-                </Text>
+              </View>
+              <View className="flex flex-col gap-1.5">
+                <Text className="subHeadingL">{event.name}</Text>
+                <View className="flex flex-row items-center gap-1">
+                  <IconCalendar
+                    fill={
+                      today ? "rgba(33, 186, 114, 1)" : "rgba(86, 58, 220, 1)"
+                    }
+                  />
+                  <Text
+                    style={{
+                      fontFamily: "Nunito-Bold",
+                      fontSize: 10,
+                      lineHeight: 14,
+                      color: today
+                        ? "rgba(33, 186, 114, 1)"
+                        : "rgba(86, 58, 220, 1)",
+                    }}
+                  >
+                    {event.date ? format(event.date, "d MMMM") : "Без даты"}
+                  </Text>
+                </View>
               </View>
             </View>
+            <MicroGuests guests={event.guests} />
           </View>
         </View>
       </Pressable>
@@ -94,38 +144,42 @@ const EventsList = () => {
   }
 
   return (
-    <FlatList
-      data={data as IEvent[]}
-      ListFooterComponent={
-        <View>
-          <View className="h-6"></View>
-          <SafeAreaView />
-        </View>
-      }
-      refreshControl={
-        <RefreshControl
-          refreshing={isFetching && !isPending}
-          onRefresh={async () => {
-            await utils.events.list.refetch();
-          }}
-        />
-      }
-      ListHeaderComponent={
-        <View className="px-4" style={{}}>
-          <Text
-            className="pb-4 pt-7"
-            style={{
-              fontSize: 22,
-              fontFamily: "NeueMachina-Ultrabold",
+    <>
+      <PageHeader title="Мои мероприятия" />
+      <FlatList
+        ListEmptyComponent={
+          <EmptyList
+            image={EventsEmpty}
+            text="Время сделать первый шаг"
+            subtext={
+              <>
+                У вас нет мероприятий,{"\n"}самое время создать новое
+                мероприятие
+              </>
+            }
+            buttonText="Создать мероприятие"
+            buttonHref={{ pathname: "/home/create" }}
+          />
+        }
+        data={data}
+        ListFooterComponent={
+          <View>
+            <View className="h-6"></View>
+            <SafeAreaView />
+          </View>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching && !isPending}
+            onRefresh={async () => {
+              await utils.events.list.refetch();
             }}
-          >
-            Мои мероприятия
-          </Text>
-        </View>
-      }
-      keyExtractor={(item) => item.id}
-      renderItem={(v) => <EventItem event={v.item} />}
-    ></FlatList>
+          />
+        }
+        keyExtractor={(item) => item.id}
+        renderItem={(v) => <EventItem event={v.item} />}
+      ></FlatList>
+    </>
   );
 };
 
@@ -141,19 +195,5 @@ export default function Index() {
     }
   }
 
-  return (
-    <View className="flex h-full w-full ">
-      <View
-        className="flex bg-surface-inverse"
-        style={{
-          overflow: "hidden",
-          flex: 1,
-          borderTopLeftRadius: 28,
-          borderTopRightRadius: 28,
-        }}
-      >
-        <EventsList />
-      </View>
-    </View>
-  );
+  return <EventsList />;
 }

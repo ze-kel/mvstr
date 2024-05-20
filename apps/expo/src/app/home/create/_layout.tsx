@@ -9,10 +9,6 @@ export default function Layout() {
         contentStyle: {
           borderTopLeftRadius: 28,
           borderTopRightRadius: 28,
-          padding: 0,
-          flex: 1,
-          margin: 0,
-          justifyContent: "center",
           backgroundColor: "rgba(254, 254, 254, 1)",
         },
       }}

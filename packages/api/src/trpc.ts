@@ -37,7 +37,7 @@ export const createTRPCContext = (opts: {
   return {
     session: opts.session,
     user: opts.user,
-    db,
+    db: db,
   };
 };
 

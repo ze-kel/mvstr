@@ -1,4 +1,12 @@
-import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
+import {
+  Dimensions,
+  FlatList,
+  Pressable,
+  RefreshControl,
+  Text,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { Link, useGlobalSearchParams } from "expo-router";
 import { setDefaultOptions } from "date-fns";
@@ -8,6 +16,7 @@ import type { IWish } from "@acme/api";
 
 import { Button } from "~/app/_components/button";
 import { IconPlus } from "~/app/_components/icons";
+import { EmptyList, PageHeader } from "~/app/_components/layoutElements";
 import Spinner from "~/app/_components/spinner";
 import { api } from "~/utils/api";
 import { formatPrice } from "~/utils/priceFormater";
@@ -20,22 +29,21 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
   return (
     <Link
       asChild
-      className="px-4"
       href={
         eventId
           ? {
-              pathname: "/event/[eventId]/wishlist/modal/[wishId]",
+              pathname: "/event/[eventId]/wishlist/item/[wishId]",
               params: { eventId: eventId, wishId: wish.id },
             }
           : {
-              pathname: "/home/main/wishlist/modal/[wishId]",
+              pathname: "/home/main/wishlist/item/[wishId]",
               params: { wishId: wish.id },
             }
       }
     >
       <Pressable
-        className="flex w-fit flex-col items-center"
-        style={{ width: "48%" }}
+        className="flex w-fit flex-col items-center  px-4"
+        style={{ maxWidth: Dimensions.get("window").width / 2, flex: 0.5 }}
       >
         <View className="">
           <View className="flex w-full overflow-hidden rounded-[20px]">
@@ -46,8 +54,7 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
                 }}
                 style={{
                   flex: 1,
-                  minWidth: 100,
-                  minHeight: 100,
+                  width: Dimensions.get("window").width / 2 - 24,
                   aspectRatio: 1,
                 }}
               />
@@ -59,46 +66,6 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
         </View>
       </Pressable>
     </Link>
-  );
-};
-
-export const WishlistHeader = () => {
-  const { eventId } = useGlobalSearchParams<{ eventId: string }>();
-
-  return (
-    <View className="flex flex-row items-start justify-between px-4">
-      <View>
-        <Text
-          className=""
-          style={{
-            fontSize: 22,
-            fontFamily: "NeueMachina-Ultrabold",
-          }}
-        >
-          Список желаний
-        </Text>
-      </View>
-
-      <Link
-        asChild
-        href={
-          eventId
-            ? {
-                pathname: "/event/[eventId]/wishlist/modal/[wishId]",
-                params: { eventId: eventId, wishId: "create" },
-              }
-            : {
-                pathname: "/home/main/wishlist/modal/[wishId]",
-
-                params: { wishId: "create" },
-              }
-        }
-      >
-        <Button size="sIcon" icon className="items-center">
-          <IconPlus width={18} height={18} fill={"white"} />
-        </Button>
-      </Link>
-    </View>
   );
 };
 
@@ -114,24 +81,40 @@ export default function Index() {
   }
 
   return (
-    <FlatList
-      className="pt-7"
-      data={data}
-      refreshControl={
-        <RefreshControl
-          refreshing={isFetching}
-          onRefresh={async () => {
-            await utils.wish.getAllWishes.refetch();
-          }}
-        />
-      }
-      horizontal={false}
-      numColumns={2}
-      columnWrapperClassName="justify-between"
-      contentContainerClassName="mt-3 flex flex-col gap-2"
-      ListHeaderComponent={WishlistHeader}
-      keyExtractor={(item) => item.id}
-      renderItem={(v) => <WishItem wish={v.item} />}
-    ></FlatList>
+    <>
+      <PageHeader
+        title="Список желаний"
+        buttonHref={{
+          pathname: "/home/main/wishlist/item/[wishId]",
+          params: { eventId, wishId: "create" },
+        }}
+      />
+      <FlatList
+        data={data}
+        ListEmptyComponent={
+          <EmptyList
+            text={"У вас пока не добавлено ни одного желания"}
+            subtext="Добавьте свое первое"
+            buttonText="Добавить желание"
+            buttonHref={{ pathname: "home/main/wishlist/item/create" }}
+          />
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={isFetching}
+            onRefresh={async () => {
+              await utils.wish.getAllWishes.refetch();
+            }}
+          />
+        }
+        ListFooterComponent={() => <SafeAreaView />}
+        horizontal={false}
+        numColumns={2}
+        columnWrapperClassName=""
+        contentContainerClassName="mt-3 flex flex-col gap-4 pb-4"
+        keyExtractor={(item) => item.id}
+        renderItem={(v) => <WishItem wish={v.item} />}
+      ></FlatList>
+    </>
   );
 }
