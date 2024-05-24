@@ -12,22 +12,6 @@ export default function Layout() {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="add"
-        options={{
-          headerShown: false,
-          presentation: "modal",
-          contentStyle: {
-            borderTopLeftRadius: 28,
-            borderTopRightRadius: 28,
-            padding: 0,
-            flex: 1,
-            margin: 0,
-            justifyContent: "center",
-            backgroundColor: "transparent",
-          },
-        }}
-      />
     </Stack>
   );
 }

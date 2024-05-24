@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { FlatList, RefreshControl, Text, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useGlobalSearchParams, useRouter } from "expo-router";
+import { Link, useGlobalSearchParams, useRouter } from "expo-router";
 import PeopleEmpty from "@assets/defImages/people_empty.png";
 
 import type { IGuestFull } from "@acme/api";
@@ -15,7 +15,7 @@ import { api } from "~/utils/api";
 
 const mask = "+# (###) ###-##-##";
 
-const maskDBNumber = (s: string) => {
+export const maskDBNumber = (s: string) => {
   let m = mask;
 
   if (s.length !== 11) return s;
@@ -27,37 +27,62 @@ const maskDBNumber = (s: string) => {
   return m;
 };
 
+export const getBaseUserInfo = (guest: Omit<IGuestFull, "event">) => {
+  const firstName = guest.user.registered
+    ? guest.user.firstName
+    : guest.firstName;
+
+  const lastName = guest.user.registered ? guest.user.lastName : guest.lastName;
+
+  const gender = guest.user.registered ? guest.user.gender : guest.gender;
+
+  return {
+    firstName: firstName || "",
+    lastName: lastName || "",
+    gender: gender || "",
+  };
+};
+
 export const GuestItem = ({ guest }: { guest: Omit<IGuestFull, "event"> }) => {
   const { eventId } = useGlobalSearchParams<{ eventId?: string }>();
 
+  const { firstName, lastName, gender } = getBaseUserInfo(guest);
+
   return (
-    <View className="my-3 flex flex-row items-center justify-between px-4">
-      <View className="flex flex-row items-center gap-2.5">
-        <UserAvatar
-          user={guest.user}
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 12,
-            resizeMode: "contain",
-            display: "flex",
-          }}
-        />
+    <Link
+      asChild
+      href={{
+        pathname: "/modals/guest/[guestId]?eventId=[eventId]",
+        params: { eventId: eventId, guestId: guest.id },
+      }}
+    >
+      <Pressable>
+        <View className="my-3 flex flex-row items-center justify-between px-4">
+          <View className="flex flex-row items-center gap-2.5">
+            <UserAvatar
+              user={guest.user}
+              gender={gender}
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 12,
+                resizeMode: "contain",
+                display: "flex",
+              }}
+            />
 
-        <View>
-          <Text className="captionL w-full">
-            {guest.user.firstName} {guest.user.lastName}
-          </Text>
-          <Text className="textL mt-0.5 w-full">
-            {maskDBNumber(guest.user.phone || "")}
-          </Text>
+            <View>
+              <Text className="captionL w-full">
+                {firstName} {lastName}
+              </Text>
+              <Text className="textL mt-0.5 w-full">
+                {maskDBNumber(guest.user.phone || "")}
+              </Text>
+            </View>
+          </View>
         </View>
-      </View>
-
-      <Button variant={"stroke"} size={"xs"}>
-        Напомнить
-      </Button>
-    </View>
+      </Pressable>
+    </Link>
   );
 };
 
@@ -79,11 +104,11 @@ export default function Index() {
 
   const filtered = useMemo(() => {
     return (
-      data?.filter(
-        (v) =>
-          v.user.firstName?.includes(searchQ) ||
-          v.user.lastName?.includes(searchQ),
-      ) || []
+      data?.filter((v) => {
+        const { firstName, lastName } = getBaseUserInfo(v);
+
+        return firstName.includes(searchQ) || lastName.includes(searchQ);
+      }) || []
     );
   }, [data, searchQ]);
 
@@ -96,8 +121,8 @@ export default function Index() {
       <PageHeader
         title="Гости на мероприятии"
         buttonHref={{
-          pathname: "/event/[eventId]/people/add",
-          params: { eventId: eventId, wishId: "create" },
+          pathname: "/modals/guest/[guestId]?eventId=[eventId]",
+          params: { eventId: eventId, guestId: "create" },
         }}
       />
       <View className="mx-4">
@@ -130,12 +155,11 @@ export default function Index() {
             }
             buttonText="Добавить гостей"
             buttonHref={{
-              pathname: "/event/[eventId]/people/add",
-              params: { eventId: eventId, wishId: "create" },
+              pathname: "/modals/guest/[guestId]?eventId=[eventId]",
+              params: { eventId: eventId, guestId: "create" },
             }}
           />
         }
-        
         horizontal={false}
         keyExtractor={(item) => item.userId}
         ListFooterComponent={() => <SafeAreaView />}

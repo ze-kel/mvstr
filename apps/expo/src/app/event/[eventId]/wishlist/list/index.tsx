@@ -1,12 +1,6 @@
-import {
-  FlatList,
-  Image,
-  Pressable,
-  RefreshControl,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { Link, useGlobalSearchParams } from "expo-router";
+import BlankImage from "@assets/defImages/blankitem.png";
 
 import type { IWish } from "@acme/api";
 
@@ -16,6 +10,7 @@ import Spinner from "~/app/_components/spinner";
 import { WishItem } from "~/app/home/main/wishlist";
 import { api } from "~/utils/api";
 import { formatPrice } from "~/utils/priceFormater";
+import { Image } from "expo-image";
 
 export const SelectWishItem = ({ wish }: { wish: IWish }) => {
   const { eventId } = useGlobalSearchParams<{ eventId?: string }>();
@@ -65,34 +60,23 @@ export const SelectWishItem = ({ wish }: { wish: IWish }) => {
     <Link
       push
       asChild
-      href={
-        eventId
-          ? {
-              pathname: "/event/[eventId]/wishlist/item/[wishId]",
-              params: { eventId: eventId, wishId: wish.id },
-            }
-          : {
-              pathname: "/home/main/wishlist/item/[wishId]",
-              params: { wishId: wish.id },
-            }
-      }
+      href={{
+        pathname: "/modals/wish/[wishId]?eventId=[eventId]",
+        params: { eventId: eventId, wishId: wish.id },
+      }}
     >
       <Pressable className="flex w-fit flex-row items-center  justify-between px-4 py-2">
         <View className="flex flex-row gap-4">
           <View className="flex h-[50px] w-[50px]  overflow-hidden rounded-[10px]">
-            {wish.image && (
-              <Image
-                source={{
-                  uri: wish.image,
-                }}
-                style={{
-                  flex: 1,
-                  width: 50,
-                  height: 50,
-                  aspectRatio: 1,
-                }}
-              />
-            )}
+            <Image
+              source={wish.image || BlankImage}
+              style={{
+                flex: 1,
+                width: 50,
+                height: 50,
+                aspectRatio: 1,
+              }}
+            />
           </View>
 
           <View>
@@ -135,7 +119,7 @@ export default function Index({ noHeader }: { noHeader?: boolean }) {
           className="pt-7"
           title="Добавить в событие"
           buttonHref={{
-            pathname: "/event/[eventId]/wishlist/item/[wishId]",
+            pathname: "/modals/wish/[wishId]?eventId=[eventId]",
             params: { eventId, wishId: "create" },
           }}
         />
@@ -149,7 +133,7 @@ export default function Index({ noHeader }: { noHeader?: boolean }) {
             subtext="Добавьте свое первое"
             buttonText="Добавить желание"
             buttonHref={{
-              pathname: "event/[eventId]/wishlist/item/create",
+              pathname: "/modals/wish/[wishId]?eventId=[eventId]",
               params: { eventId },
             }}
           />

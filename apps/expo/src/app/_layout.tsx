@@ -40,7 +40,24 @@ export default function RootLayout() {
               headerStyle: { backgroundColor: "rgba(243, 245, 247, 1)" },
               contentStyle: { backgroundColor: "rgba(243, 245, 247, 1)" },
             }}
-          ></Stack>
+          >
+            <Stack.Screen
+              name="modals"
+              options={{
+                headerShown: false,
+                presentation: "modal",
+                contentStyle: {
+                  borderTopLeftRadius: 28,
+                  borderTopRightRadius: 28,
+                  padding: 0,
+                  flex: 1,
+                  margin: 0,
+                  justifyContent: "center",
+                  backgroundColor: "transparent",
+                },
+              }}
+            />
+          </Stack>
           <StatusBar translucent={false} style="dark" />
         </BottomSheetModalProvider>
       </GestureHandlerRootView>

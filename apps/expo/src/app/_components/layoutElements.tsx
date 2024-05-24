@@ -82,63 +82,24 @@ export const UserMenu = () => {
   const u = api.user.getMe.useQuery();
   useHandleError(u.error);
 
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["25%"], []);
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
-
   if (!u.data) return <></>;
-
-  const logout = async () => {
-    await clearAuthToken();
-    u.refetch();
-  };
 
   return (
     <>
-      <Pressable onPress={handlePresentModalPress}>
-        <UserAvatar
-          user={u.data}
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 10,
-            resizeMode: "contain",
-            display: "flex",
-          }}
-        />
-      </Pressable>
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        index={0}
-        snapPoints={snapPoints}
-        onChange={handleSheetChanges}
-        style={{
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 5,
-          },
-          shadowOpacity: 0.34,
-          shadowRadius: 6.27,
-
-          elevation: 10,
-        }}
-      >
-        <BottomSheetView className=" flex  items-center px-4">
-          <Text className="subHeadingL">
-            {u.data.firstName} {u.data.lastName}
-          </Text>
-          <Text className="textXL">{u.data.phone}</Text>
-          <Button onPress={logout} className="mt-4 w-full" variant={"stroke"}>
-            Выйти
-          </Button>
-        </BottomSheetView>
-      </BottomSheetModal>
+      <Link asChild href={"/modals/me"}>
+        <Pressable>
+          <UserAvatar
+            user={u.data}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              resizeMode: "contain",
+              display: "flex",
+            }}
+          />
+        </Pressable>
+      </Link>
     </>
   );
 };

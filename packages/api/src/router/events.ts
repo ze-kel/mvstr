@@ -12,7 +12,7 @@ import { protectedProcedure, publicProcedure } from "../trpc";
 export const ZNewEvent = z.object({
   name: z.string(),
   type: z.string().optional(),
-  date: z.date().optional(),
+  date: z.date(),
   place: z.string().optional(),
   time: z.string().optional(),
   image: z.string().optional(),
@@ -20,11 +20,12 @@ export const ZNewEvent = z.object({
 });
 
 export type INewEvent = z.infer<typeof ZNewEvent>;
+export type IEventBase = typeof schema.eventTable.$inferSelect;
 export type IEvent = typeof schema.eventTable.$inferSelect & {
   guests: IGuestFull[];
 };
 export type IGuest = typeof schema.guestsTable.$inferSelect;
-export type IGuestFull = IGuest & { user: IUser; event: IEvent };
+export type IGuestFull = IGuest & { user: IUser; event: IEventBase };
 
 export const ZEventUpdate = ZNewEvent.partial();
 
@@ -40,10 +41,38 @@ export const eventsRouter = {
 
   get: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.db.query.eventTable.findFirst({
-      where: and(
-        eq(schema.eventTable.userId, ctx.user.id),
-        eq(schema.eventTable.id, input),
-      ),
+      where: eq(schema.eventTable.id, input),
+    });
+  }),
+
+  getPublic: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    return await ctx.db.query.eventTable.findFirst({
+      where: eq(schema.eventTable.id, input),
+      with: {
+        guests: { columns: { gender: true } },
+        user: {
+          columns: {
+            firstName: true,
+            lastName: true,
+            gender: true,
+            profileImage: true,
+          },
+        },
+        wishes: {
+          with: {
+            wish: {
+              columns: {
+                id: true,
+                link: true,
+                description: true,
+                title: true,
+                price: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
     });
   }),
 
@@ -71,7 +100,7 @@ export const eventsRouter = {
     .mutation(({ ctx, input }) => {
       return ctx.db
         .update(schema.eventTable)
-        .set({ ...input })
+        .set({ ...input.update })
         .where(
           and(
             eq(schema.eventTable.userId, ctx.user.id),
@@ -99,11 +128,19 @@ export const eventsRouter = {
         where: eq(schema.guestsTable.eventId, input),
         with: {
           user: true,
-          event: true,
         },
       });
 
-      // TODO: throw if user is not the one in ctx
+      console.log(r1);
+
+      /*
+      const first = r1[0];
+      if (first) {
+        if (first.event.userId !== ctx.user.id) {
+          throw new Error("You do not have acess to guests for this event");
+        }
+      }
+    */
 
       return r1;
     }),
@@ -125,25 +162,80 @@ export const eventsRouter = {
 
       if (existingUser) {
         return await ctx.db.insert(schema.guestsTable).values({
+          id: uuidv4(),
           eventId: input.eventId,
           userId: existingUser.id,
           role: "guest",
+          firstName: input.firstName,
+          lastName: input.lastName,
+          gender: input.gender,
         });
       } else {
         const userId = generateId(15);
         const user = await ctx.db.insert(schema.userTable).values({
-          firstName: input.firstName,
-          lastName: input.lastName,
           phone: input.phone,
           id: userId,
-          gender: input.gender,
         });
         return await ctx.db.insert(schema.guestsTable).values({
+          id: uuidv4(),
           eventId: input.eventId,
           userId: userId,
           role: "guest",
+          firstName: input.firstName,
+          lastName: input.lastName,
+          gender: input.gender,
         });
       }
+    }),
+
+  updateGuest: protectedProcedure
+    .input(
+      z.object({
+        guestId: z.string(),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+        gender: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const existingGuest = await ctx.db.query.guestsTable.findFirst({
+        where: eq(schema.guestsTable.id, input.guestId),
+        with: {
+          event: true,
+        },
+      });
+
+      if (!existingGuest || existingGuest.event.userId !== ctx.user.id) {
+        throw new Error("Wrong guest id");
+      }
+
+      return await ctx.db
+        .update(schema.guestsTable)
+        .set({
+          firstName: input.firstName,
+          lastName: input.lastName,
+          gender: input.gender,
+        })
+        .where(eq(schema.guestsTable.id, input.guestId));
+    }),
+
+  removeGuest: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      const existingGuest = await ctx.db.query.guestsTable.findFirst({
+        where: eq(schema.guestsTable.id, input),
+        with: {
+          event: true,
+        },
+      });
+
+      if (!existingGuest || existingGuest.event.userId !== ctx.user.id) {
+        throw new Error("Wrong guest id");
+      }
+
+      return await ctx.db
+        .delete(schema.guestsTable)
+        .where(eq(schema.guestsTable.id, input));
     }),
 
   getWishes: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {

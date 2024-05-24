@@ -41,7 +41,7 @@
     "expo-secure-store": "~13.0.1",
     "expo-splash-screen": "~0.27.4",
     "expo-status-bar": "~1.12.1",
-    "expo-updates": "~0.25.12",
+    "expo-updates": "~0.25.14",
     "expo-web-browser": "~13.0.3",
     "imask": "^7.6.0",
     "nativewind": "~4.0.36",

@@ -32,6 +32,7 @@ export const env = createEnv({
     MTS_EXOLVE_TOKEN: z.string(),
     MTS_EXOLVE_NUMBER: z.string(),
     MASTER_CODE: z.string(),
+    ENABLE_SMS_CODES: z.boolean({ coerce: true }),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
@@ -62,7 +63,6 @@ const db = drizzle(pool, { schema });
 if (process.env.MIGRATE === "true") {
   void migrate(db, { migrationsFolder: "./drizzle" });
 }
-
 
 const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
 

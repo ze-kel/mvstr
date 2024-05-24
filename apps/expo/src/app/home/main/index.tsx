@@ -2,7 +2,6 @@ import type { SvgProps } from "react-native-svg";
 import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { ClipPath, Defs, G, Path } from "react-native-svg";
-import { Image } from "expo-image";
 import { Link, Redirect, useRootNavigationState } from "expo-router";
 import EventsEmpty from "@assets/defImages/events_empty.png";
 import { format, isToday, setDefaultOptions } from "date-fns";
@@ -74,7 +73,6 @@ const EventItem = ({ event }: { event: IEvent }) => {
   return (
     <Link
       href={{
-        // pathname: "home/create/third/[eventId]",
         pathname: "/event/[eventId]/",
         params: { eventId: event.id },
       }}

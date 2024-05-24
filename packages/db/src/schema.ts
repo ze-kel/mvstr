@@ -24,24 +24,28 @@ export const eventTable = pgTable("events", {
   // id владельца и создателя
   userId: text("userId")
     .notNull()
-    .references(() => userTable.id),
+    .references(() => userTable.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   type: text("type"),
   place: text("place"),
-  date: timestamp("date"),
+  date: timestamp("date").notNull(),
   time: text("time"),
   description: text("description"),
   image: text("image"),
 });
 
 export const guestsTable = pgTable("guests", {
-  eventId: text("id")
+  id: text("id").primaryKey(),
+  eventId: text("event_id")
     .notNull()
-    .references(() => eventTable.id),
+    .references(() => eventTable.id, { onDelete: "cascade" }),
   userId: text("user_id")
     .notNull()
-    .references(() => userTable.id),
+    .references(() => userTable.id, { onDelete: "cascade" }),
   role: text("role").default("guest"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  gender: text("gender"),
   reminderDate: timestamp("reminder_date", {
     withTimezone: true,
     mode: "date",
@@ -53,9 +57,13 @@ export const userRelations = relations(userTable, ({ many }) => ({
   events: many(guestsTable),
 }));
 
-export const eventRelations = relations(eventTable, ({ many }) => ({
+export const eventRelations = relations(eventTable, ({ many, one }) => ({
   guests: many(guestsTable),
   wishes: many(wishConnectionsTable),
+  user: one(userTable, {
+    fields: [eventTable.userId],
+    references: [userTable.id],
+  }),
 }));
 
 export const guestRelations = relations(guestsTable, ({ one }) => ({
@@ -71,8 +79,12 @@ export const guestRelations = relations(guestsTable, ({ one }) => ({
 
 export const wishConnectionsTable = pgTable("wishconnections", {
   id: text("id").primaryKey(),
-  wishId: text("wish_id").references(() => wishTable.id),
-  eventId: text("event_id").references(() => eventTable.id),
+  wishId: text("wish_id").references(() => wishTable.id, {
+    onDelete: "cascade",
+  }),
+  eventId: text("event_id").references(() => eventTable.id, {
+    onDelete: "cascade",
+  }),
 });
 
 export const wishRelations = relations(wishConnectionsTable, ({ one }) => ({
@@ -129,10 +141,10 @@ export const taskTable = pgTable("tasks", {
   id: text("id").primaryKey(),
   eventId: text("event_id")
     .notNull()
-    .references(() => eventTable.id),
+    .references(() => eventTable.id, { onDelete: "cascade" }),
   userId: text("user_id")
     .notNull()
-    .references(() => userTable.id),
+    .references(() => userTable.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   description: text("description").notNull(),
   time: timestamp("time"),

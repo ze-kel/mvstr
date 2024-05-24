@@ -121,8 +121,12 @@ const PhoneLogin = () => {
   const validateCode = api.user.verifyPhoneCode.useMutation();
 
   const handleRequestCode = async () => {
-    const res = await requestCode.mutateAsync(phone);
-    setRequestExpiration(res);
+    if (phone.length !== 11) return;
+
+    if (!requestCode.isPending) {
+      const res = await requestCode.mutateAsync(phone);
+      setRequestExpiration(res);
+    }
   };
 
   const handleValidateCode = async (code: string) => {
@@ -130,7 +134,7 @@ const PhoneLogin = () => {
       const res = await validateCode.mutateAsync({ phone, code });
 
       if (res.action === "register") {
-        router.navigate({
+        router.replace({
           pathname: "/login/register/[tokenId]",
           params: {
             tokenId: res.token,
@@ -159,7 +163,7 @@ const PhoneLogin = () => {
           </Text>
           <Text className="textXL mt-2 text-center">
             Отправили код на номер{" "}
-            <Text className="text-text-accent">{phone}</Text>
+            <Text className="text-text-accent">{transformNumber(phone)}</Text>
           </Text>
 
           <View className="mt-5">
@@ -204,7 +208,13 @@ const PhoneLogin = () => {
         </Text>
 
         <PhoneNumberInput className="mt-6" value={phone} onChange={setPhone} />
-        <Button variant={"stroke"} onPress={handleRequestCode} className="mt-4">
+        <Button
+          loading={requestCode.isPending}
+          disabled={phone.length !== 11}
+          variant={"stroke"}
+          onPress={handleRequestCode}
+          className="mt-4"
+        >
           Получить код
         </Button>
       </View>

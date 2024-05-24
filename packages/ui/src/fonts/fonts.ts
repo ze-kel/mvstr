@@ -4,19 +4,19 @@ import localFont from "next/font/local";
 export const NeueMachinaUB = localFont({
   src: "./NeueMachina-Ultrabold.otf",
   display: "swap",
-  variable: "--machina-ultrabold",
+  variable: "--neue-machina-ultrabold",
 });
 
 export const NeueMachinaLight = localFont({
   src: "./NeueMachina-Light.otf",
   display: "swap",
-  variable: "--machina-light",
+  variable: "--neue-machina-light",
 });
 
 export const NeueMachinaRegular = localFont({
   src: "./NeueMachina-Regular.otf",
   display: "swap",
-  variable: "--machina-regular",
+  variable: "--neue-machina-regular",
 });
 
 export const Nunito400 = Nunito_Sans({

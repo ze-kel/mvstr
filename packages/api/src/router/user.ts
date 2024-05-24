@@ -39,20 +39,18 @@ export const userRouter = {
         destination: input,
       };
 
-      console.log(bdy);
+      console.log("env.ENABLE_SMS_CODES", env.ENABLE_SMS_CODES);
 
-      const res = await fetch("https://api.exolve.ru/messaging/v1/SendSMS", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${env.MTS_EXOLVE_TOKEN}`,
-        },
-        body: JSON.stringify(bdy),
-      });
-
-      const result = await res.json();
-
-      console.log(result);
+      if (env.ENABLE_SMS_CODES) {
+        const res = await fetch("https://api.exolve.ru/messaging/v1/SendSMS", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${env.MTS_EXOLVE_TOKEN}`,
+          },
+          body: JSON.stringify(bdy),
+        });
+      }
 
       const expiresAt = new Date(new Date().getTime() + 3 * 60000);
 
@@ -130,16 +128,15 @@ export const userRouter = {
         firstName: z.string(),
         lastName: z.string(),
         gender: z.string(),
+        avatar: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = generateId(15);
-
       const phoneData = await ctx.db.query.phoneTokens.findFirst({
         where: eq(schema.phoneTokens.token, input.registrationToken),
       });
 
-      if (!phoneData) {
+      if (!phoneData?.phone) {
         throw new Error("Wrong registration token");
       }
 
@@ -151,28 +148,60 @@ export const userRouter = {
         .delete(schema.phoneTokens)
         .where(eq(schema.phoneTokens.token, input.registrationToken));
 
-      await ctx.db
-        .insert(schema.userTable)
-        .values({
+      const existing = await ctx.db.query.userTable.findFirst({
+        where: eq(schema.userTable.phone, phoneData.phone),
+      });
+
+      if (!existing) {
+        const userId = generateId(15);
+        await ctx.db.insert(schema.userTable).values({
           id: userId,
           firstName: input.firstName,
           lastName: input.lastName,
           phone: phoneData.phone,
           gender: input.gender,
+          profileImage: input.avatar,
           registered: true,
-        })
-        .onConflictDoUpdate({
-          target: schema.userTable.phone,
-          set: {
-            firstName: input.firstName,
-            lastName: input.lastName,
-            gender: input.gender,
-            registered: true,
-          },
         });
 
-      const session = await lucia.createSession(userId, {});
+        const session = await lucia.createSession(userId, {});
+        return session.id;
+      }
 
+      await ctx.db
+        .update(schema.userTable)
+        .set({
+          firstName: input.firstName,
+          lastName: input.lastName,
+          phone: phoneData.phone,
+          gender: input.gender,
+          registered: true,
+          profileImage: input.avatar,
+        })
+        .where(eq(schema.userTable.id, existing.id));
+
+      const session = await lucia.createSession(existing.id, {});
       return session.id;
+    }),
+  updateAccount: protectedProcedure
+    .input(
+      z.object({
+        firstName: z.string(),
+        lastName: z.string(),
+        gender: z.string(),
+        avatar: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .update(schema.userTable)
+        .set({
+          firstName: input.firstName,
+          lastName: input.lastName,
+          gender: input.gender,
+          registered: true,
+          profileImage: input.avatar,
+        })
+        .where(eq(schema.userTable.id, ctx.user.id));
     }),
 } satisfies TRPCRouterRecord;

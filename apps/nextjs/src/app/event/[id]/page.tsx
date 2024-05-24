@@ -1,15 +1,31 @@
-import { EventProvider } from "~/app/_components/eventProvider";
-import { Sidebar } from "~/app/_components/sidebar";
-import { EventUi } from "~/app/event/[id]/eventUi";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-const EventPage = ({ params }: { params: { id: string } }) => {
+import { EventUi } from "~/app/event/[id]/invitation";
+import { api } from "~/trpc/server";
+
+const EventPage = async ({ params }: { params: { id: string } }) => {
+  const res = await api.events.getPublic(params.id);
+
+  if (!res) return;
+
+  const qc = new QueryClient();
+
+  qc.setQueryData(
+    [["events", "getPublic"], { input: params.id, type: "query" }],
+    res,
+  );
+
   return (
-    <EventProvider id={params.id}>
-      <div className="flex">
+    <div className="flex">
+      <HydrationBoundary state={dehydrate(qc)}>
         <EventUi id={params.id} />
-        <div>Event with id {params.id}</div>
-      </div>
-    </EventProvider>
+      </HydrationBoundary>
+    </div>
   );
 };
 

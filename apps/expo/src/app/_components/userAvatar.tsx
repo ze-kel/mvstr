@@ -1,22 +1,32 @@
 import type { ImageStyle } from "expo-image";
 import type { StyleProp } from "react-native";
 import { Image } from "expo-image";
-import DefaultBoy from "@assets/defaultBoy.png";
-import DefaultGirl from "@assets/defaultGirl.png";
 
 import type { IUser } from "@acme/api";
+
+import { ImageWithDefaults } from "~/app/_components/imageWithDefaults";
 
 export const UserAvatar = ({
   user,
   style,
+  gender,
   className,
 }: {
   user: IUser;
+  gender?: string;
   className?: string;
   style?: StyleProp<ImageStyle>;
 }) => {
-  const src =
-    user.profileImage || user.gender === "female" ? DefaultGirl : DefaultBoy;
+  const g = user.registered ? user.gender : gender;
 
-  return <Image className={className} source={src} style={style} />;
+  const src = g === "female" ? "default/girl" : "default/boy";
+
+  return (
+    <ImageWithDefaults
+      className={className}
+      image={user.profileImage}
+      defaultImage={src}
+      style={style}
+    />
+  );
 };

@@ -1,34 +1,89 @@
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Image } from "expo-image";
+import { Text, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Redirect, useGlobalSearchParams, useRouter } from "expo-router";
-import DefaultBoy from "@assets/defaultBoy.png";
-import DefaultGirl from "@assets/defaultGirl.png";
 import { TRPCClientError } from "@trpc/client";
 
 import { Button } from "~/app/_components/button";
+import { defaultUserPicsArray } from "~/app/_components/imageWithDefaults";
 import { Input } from "~/app/_components/input";
+import { RadioTabs } from "~/app/_components/radioTabs";
+import { UploadOrSelectImage } from "~/app/home/create";
 import { api } from "~/utils/api";
-import { setAuthToken, setAuthTokenSync } from "~/utils/auth";
+import { setAuthToken } from "~/utils/auth";
 
-/*
-import DateTimePicker from "@react-native-community/datetimepicker";  
-  const changeDate = (_: unknown, selectedDate?: Date) => {
-    if (selectedDate) {
-      setDate(selectedDate);
-    }
-  };      
-          <Text className="subHeadingM mt-5">Дата вашего рождения</Text>
-          <DateTimePicker
-            display="spinner"
-            testID="dateTimePicker"
-            value={date}
-            mode={"date"}
-            locale="ru-RU"
-            onChange={changeDate}
-          />
-*/
+export interface UserFormData {
+  firstName: string;
+  lastName: string;
+  gender: string;
+  avatar: string;
+}
+
+export const UserDataForm = ({
+  initial,
+  onCommit,
+}: {
+  initial?: UserFormData;
+  onCommit: (v: UserFormData) => Promise<void>;
+}) => {
+  const [firstName, setFirstName] = useState(initial?.firstName || "");
+  const [lastName, setLastName] = useState(initial?.lastName || "");
+  const [gender, setGender] = useState(initial?.gender || "male");
+  const [avatar, setAvatar] = useState(
+    initial?.avatar || defaultUserPicsArray[0] || "",
+  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  return (
+    <>
+      <Text className="subHeadingM mt-5">Пол</Text>
+      <RadioTabs
+        value={gender}
+        onChange={setGender}
+        className="mt-2"
+        values={[
+          { value: "male", label: "Мужчина" },
+          { value: "female", label: "Женщина" },
+        ]}
+      />
+      <Text className="subHeadingM mt-5">Имя</Text>
+      <Input
+        className="mt-3"
+        placeholder="Введите имя"
+        value={firstName}
+        onChangeText={setFirstName}
+      />
+      <Text className="subHeadingM mt-5">Фамилия</Text>
+      <Input
+        className="mt-3"
+        placeholder="Введите фамилию"
+        value={lastName}
+        onChangeText={setLastName}
+      />
+      <Text className="subHeadingM mt-5">Аватар</Text>
+      <View className="mt-2">
+        <UploadOrSelectImage
+          value={avatar}
+          setValue={setAvatar}
+          defaults={defaultUserPicsArray}
+        />
+      </View>
+
+      <Button
+        loading={isLoading}
+        onPress={async () => {
+          setIsLoading(true);
+          await onCommit({ firstName, lastName, gender, avatar });
+          setIsLoading(false);
+        }}
+        disabled={!(firstName.length && lastName.length)}
+        className="mt-4"
+      >
+        {initial ? "Сохранить" : "Создать аккаунт"}
+      </Button>
+    </>
+  );
+};
 
 const RegisterWithToken = () => {
   const router = useRouter();
@@ -37,20 +92,14 @@ const RegisterWithToken = () => {
     tokenId: string;
   }>();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [gender, setGender] = useState("male");
-
   const m = api.user.createAccount.useMutation();
 
-  const registerHandler = async () => {
-    if (!firstName.length || !lastName.length || !tokenId) return;
+  const registerHandler = async (v: UserFormData) => {
+    if (!tokenId) return;
 
     try {
       const res = await m.mutateAsync({
-        firstName,
-        lastName,
-        gender,
+        ...v,
         registrationToken: tokenId,
       });
 
@@ -74,68 +123,12 @@ const RegisterWithToken = () => {
   return (
     <View className="flex h-full w-full ">
       <View className="mx-4 rounded-[20px] bg-surface-inverse ">
-        <ScrollView className="px-5 py-7">
+        <KeyboardAwareScrollView className="px-5 py-7">
           <Text className="headingL text-center text-[24px] leading-[28px]">
             Регистрация
           </Text>
-          <Text className="subHeadingM mt-5">Ваше имя</Text>
-          <Input
-            className="mt-3"
-            placeholder="Введите имя"
-            value={firstName}
-            onChangeText={setFirstName}
-          />
-          <Text className="subHeadingM mt-5">Ваша фамилия</Text>
-          <Input
-            className="mt-3"
-            placeholder="Введите фамилию"
-            value={lastName}
-            onChangeText={setLastName}
-          />
-          <Text className="subHeadingM mt-5">Ваш пол</Text>
-          <View className="mt-2 flex flex-row gap-2">
-            <Pressable onPress={() => setGender("female")}>
-              <Image
-                source={DefaultGirl}
-                style={{
-                  borderWidth: 2,
-                  borderColor:
-                    gender === "female" ? "rgba(61, 56, 73, 1)" : "transparent",
-                  width: 64,
-                  height: 64,
-                  borderRadius: 12,
-                  resizeMode: "contain",
-                  display: "flex",
-                }}
-              />
-            </Pressable>
-
-            <Pressable onPress={() => setGender("male")}>
-              <Image
-                source={DefaultBoy}
-                style={{
-                  borderWidth: 2,
-                  borderColor:
-                    gender === "male" ? "rgba(61, 56, 73, 1)" : "transparent",
-                  width: 64,
-                  height: 64,
-                  borderRadius: 12,
-                  resizeMode: "contain",
-                  display: "flex",
-                }}
-              />
-            </Pressable>
-          </View>
-
-          <Button
-            onPress={registerHandler}
-            disabled={!(firstName.length && lastName.length)}
-            className="mt-4"
-          >
-            Создать аккаунт
-          </Button>
-          <SafeAreaView />
-        </ScrollView>
+          <UserDataForm onCommit={registerHandler} />
+        </KeyboardAwareScrollView>
       </View>
     </View>
   );

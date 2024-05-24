@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { Link, useGlobalSearchParams } from "expo-router";
+import BlankImage from "@assets/defImages/blankitem.png";
 import { setDefaultOptions } from "date-fns";
 import { ru } from "date-fns/locale";
 
@@ -29,17 +30,10 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
   return (
     <Link
       asChild
-      href={
-        eventId
-          ? {
-              pathname: "/event/[eventId]/wishlist/item/[wishId]",
-              params: { eventId: eventId, wishId: wish.id },
-            }
-          : {
-              pathname: "/home/main/wishlist/item/[wishId]",
-              params: { wishId: wish.id },
-            }
-      }
+      href={{
+        pathname: "/modals/wish/[wishId]?eventId=[eventId]",
+        params: { eventId: eventId, wishId: wish.id },
+      }}
     >
       <Pressable
         className="flex w-fit flex-col items-center  px-4"
@@ -47,18 +41,14 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
       >
         <View className="">
           <View className="flex w-full overflow-hidden rounded-[20px]">
-            {wish.image && (
-              <Image
-                source={{
-                  uri: wish.image,
-                }}
-                style={{
-                  flex: 1,
-                  width: Dimensions.get("window").width / 2 - 24,
-                  aspectRatio: 1,
-                }}
-              />
-            )}
+            <Image
+              source={wish.image || BlankImage}
+              style={{
+                flex: 1,
+                width: Dimensions.get("window").width / 2 - 24,
+                aspectRatio: 1,
+              }}
+            />
           </View>
 
           <Text className="captionXL mt-2 w-full">{wish.title}</Text>
