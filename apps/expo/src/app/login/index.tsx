@@ -70,7 +70,7 @@ export default function Index() {
       <View className="mx-4 rounded-[20px] bg-surface-inverse px-5 py-7">
         <View className="headingL text-center text-[24px] leading-[28px]">
           <Text className="headingL text-center text-[24px] leading-[28px]">
-            Добро пожаловать
+            Добро пожаловать тест
           </Text>
           <Text className="headingL text-center text-[24px] leading-[28px]">
             в Место Встречи
