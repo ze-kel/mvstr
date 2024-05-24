@@ -75,7 +75,7 @@ export default function Index() {
       <PageHeader
         title="Список желаний"
         buttonHref={{
-          pathname: "/home/main/wishlist/item/[wishId]",
+          pathname: "/modals/wish/[wishId]?eventId=[eventId]",
           params: { eventId, wishId: "create" },
         }}
       />
@@ -86,7 +86,10 @@ export default function Index() {
             text={"У вас пока не добавлено ни одного желания"}
             subtext="Добавьте свое первое"
             buttonText="Добавить желание"
-            buttonHref={{ pathname: "home/main/wishlist/item/create" }}
+            buttonHref={{
+              pathname: "/modals/wish/[wishId]?eventId=[eventId]",
+              params: { eventId, wishId: "create" },
+            }}
           />
         }
         refreshControl={

@@ -45,6 +45,8 @@ const TaskEditor = ({
 
   const [showDateSelector, setShowDate] = useState(false);
 
+  const [isLoading, setIsloading] = useState(false);
+
   return (
     <View className="rounded-[28px] bg-surface-inverse px-4 pb-32 pt-6">
       <TextInput
@@ -105,9 +107,12 @@ const TaskEditor = ({
       </View>
 
       <Button
+        loading={isLoading}
         className="mt-4"
-        onPress={() => {
-          void handleSave({ ...task.current, time: date });
+        onPress={async () => {
+          setIsloading(true);
+          await handleSave({ ...task.current, time: date });
+          setIsloading(false);
         }}
       >
         Сохранить

@@ -5,7 +5,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: "mvstr",
   slug: "mvstr",
   scheme: "mvstr",
-  version: "0.1.0",
+  version: "0.1.1",
   orientation: "portrait",
   icon: "./assets/icon.png",
   userInterfaceStyle: "light",
