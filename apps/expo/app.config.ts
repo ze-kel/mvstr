@@ -2,8 +2,8 @@ import type { ConfigContext, ExpoConfig } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: "expo",
-  slug: "expo",
+  name: "mvstr",
+  slug: "mvstr",
   scheme: "mvstr",
   version: "0.1.0",
   orientation: "portrait",
@@ -16,12 +16,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   updates: {
     fallbackToCacheTimeout: 0,
-    url: "https://u.expo.dev/3f8ddbc0-d6a5-4830-998c-c30f44b773d8",
+    url: "https://u.expo.dev/1ce2ef06-26b6-4954-b889-a9d9a1f6c962",
   },
   assetBundlePatterns: ["**/*"],
   ios: {
-    bundleIdentifier: "your.bundle.identifier",
-    supportsTablet: true,
+    bundleIdentifier: "com.mvstr.mvapp",
+    supportsTablet: false,
   },
   android: {
     package: "your.bundle.identifier",
@@ -32,7 +32,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   extra: {
     eas: {
-      projectId: "3f8ddbc0-d6a5-4830-998c-c30f44b773d8",
+      projectId: "1ce2ef06-26b6-4954-b889-a9d9a1f6c962",
     },
   },
   runtimeVersion: {

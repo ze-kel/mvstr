@@ -159,6 +159,7 @@ export const userRouter = {
           lastName: input.lastName,
           phone: phoneData.phone,
           gender: input.gender,
+          registered: true,
         })
         .onConflictDoUpdate({
           target: schema.userTable.phone,
@@ -166,6 +167,7 @@ export const userRouter = {
             firstName: input.firstName,
             lastName: input.lastName,
             gender: input.gender,
+            registered: true,
           },
         });
 
