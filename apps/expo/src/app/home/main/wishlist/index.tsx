@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -15,8 +16,6 @@ import { ru } from "date-fns/locale";
 
 import type { IWish } from "@acme/api";
 
-import { Button } from "~/app/_components/button";
-import { IconPlus } from "~/app/_components/icons";
 import { EmptyList, PageHeader } from "~/app/_components/layoutElements";
 import Spinner from "~/app/_components/spinner";
 import { api } from "~/utils/api";
@@ -63,10 +62,12 @@ export default function Index() {
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
 
   const utils = api.useUtils();
-  const { data, isFetching, error, isPending } =
+  const { data, isRefetching, error, isLoading } =
     api.wish.getAllWishes.useQuery();
 
-  if (isPending) {
+  const [allowSpiiner, setAllowSpinner] = useState(false);
+
+  if (isLoading) {
     return <Spinner />;
   }
 
@@ -94,9 +95,11 @@ export default function Index() {
         }
         refreshControl={
           <RefreshControl
-            refreshing={isFetching}
+            refreshing={allowSpiiner && isRefetching}
             onRefresh={async () => {
+              setAllowSpinner(true);
               await utils.wish.getAllWishes.refetch();
+              setAllowSpinner(false);
             }}
           />
         }

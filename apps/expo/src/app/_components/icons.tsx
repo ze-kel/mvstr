@@ -1,6 +1,6 @@
 import type { SvgProps } from "react-native-svg";
 import React from "react";
-import Svg, { ClipPath, Defs, G, Path } from "react-native-svg";
+import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
 
 export const IconAll = React.forwardRef<Svg, SvgProps>(({ ...props }, ref) => {
   return (
@@ -107,3 +107,57 @@ export const IconTime = React.forwardRef<Svg, SvgProps>(({ ...props }, ref) => {
     </Svg>
   );
 });
+
+export const IconStatusYes = React.forwardRef<Svg, SvgProps>(
+  ({ ...props }, ref) => {
+    return (
+      <Svg ref={ref} viewBox="0 0 12 12" fill="none" {...props}>
+        <Rect width={12} height={12} rx={4} fill="#21BA72" />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M8.308 4.281a.3.3 0 01.012.425L5.474 7.714a.27.27 0 01-.387.005L3.69 6.32a.3.3 0 01.424-.424l1.071 1.072a.12.12 0 00.172-.003l2.528-2.672a.3.3 0 01.424-.012z"
+          fill="#171619"
+        />
+      </Svg>
+    );
+  },
+);
+export const IconStatusMaybe = React.forwardRef<Svg, SvgProps>(
+  ({ ...props }, ref) => {
+    return (
+      <Svg ref={ref} viewBox="0 0 12 12" fill="none" {...props}>
+        <Rect width={12} height={12} rx={4} fill="#DC883A" />
+        <G clipPath="url(#clip0_354_51950)" fill="#171619">
+          <Path d="M5.996 3.5a2.508 2.508 0 011.78.75h-.78a.25.25 0 000 .5h1.036a.465.465 0 00.464-.464V3.25a.25.25 0 00-.25-.25.25.25 0 00-.25.25v.52A2.995 2.995 0 003.01 5.725a.252.252 0 00.25.275.245.245 0 00.247-.22 2.503 2.503 0 012.49-2.28zM8.738 6a.245.245 0 00-.247.22A2.496 2.496 0 014.22 7.75H5a.25.25 0 100-.5H3.964a.464.464 0 00-.464.464V8.75a.25.25 0 00.5 0v-.52a2.995 2.995 0 004.988-1.955.252.252 0 00-.25-.275z" />
+        </G>
+        <Defs>
+          <ClipPath id="clip0_354_51950">
+            <Path fill="#fff" transform="translate(3 3)" d="M0 0H6V6H0z" />
+          </ClipPath>
+        </Defs>
+      </Svg>
+    );
+  },
+);
+
+export const IconStatusNo = React.forwardRef<Svg, SvgProps>(
+  ({ ...props }, ref) => {
+    return (
+      <Svg ref={ref} viewBox="0 0 12 12" fill="none" {...props}>
+        <Rect width={12} height={12} rx={4} fill="#DC3A3A" />
+        <G clipPath="url(#clip0_354_51954)">
+          <Path
+            d="M6 3a3 3 0 100 6 3 3 0 000-6zm0 .5c.577 0 1.135.2 1.581.566L4.065 7.58A2.498 2.498 0 016 3.5zm0 5c-.577 0-1.135-.2-1.581-.566L7.935 4.42A2.498 2.498 0 016 8.5z"
+            fill="#171619"
+          />
+        </G>
+        <Defs>
+          <ClipPath id="clip0_354_51954">
+            <Path fill="#fff" transform="translate(3 3)" d="M0 0H6V6H0z" />
+          </ClipPath>
+        </Defs>
+      </Svg>
+    );
+  },
+);

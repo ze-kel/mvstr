@@ -8,7 +8,7 @@ import { api } from "~/utils/api";
 const EditEvent = () => {
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
 
-  const { data, isFetching } = api.events.get.useQuery(eventId || "", {
+  const { data } = api.events.get.useQuery(eventId || "", {
     refetchOnMount: false,
   });
 

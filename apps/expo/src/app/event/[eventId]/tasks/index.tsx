@@ -1,4 +1,5 @@
 import type { SvgProps } from "react-native-svg";
+import { useState } from "react";
 import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle, ClipPath, Defs, G, Path } from "react-native-svg";
@@ -154,12 +155,13 @@ export default function Index() {
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
 
   const utils = api.useUtils();
-  const { data, isFetching, isPending, error } =
+  const { data, isRefetching, isLoading, error } =
     api.tasks.getTasksForEvent.useQuery({
       id: eventId!,
     });
+  const [allowSpiiner, setAllowSpinner] = useState(false);
 
-  if (isPending) {
+  if (isLoading) {
     return <Spinner />;
   }
 
@@ -177,9 +179,11 @@ export default function Index() {
         data={data}
         refreshControl={
           <RefreshControl
-            refreshing={isFetching && !isPending}
+            refreshing={allowSpiiner && isRefetching}
             onRefresh={async () => {
+              setAllowSpinner(true);
               await utils.tasks.getTasksForEvent.refetch({ id: eventId || "" });
+              setAllowSpinner(false);
             }}
           />
         }

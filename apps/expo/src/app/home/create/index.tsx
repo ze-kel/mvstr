@@ -19,7 +19,7 @@ import { ImageUploader } from "~/app/modals/wish/[wishId]";
 import { api } from "~/utils/api";
 import { cn } from "~/utils/cn";
 
-const DatePicker = ({
+export const DatePicker = ({
   date,
   onChange,
 }: {

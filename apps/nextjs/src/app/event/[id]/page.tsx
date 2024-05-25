@@ -11,6 +11,8 @@ import { api } from "~/trpc/server";
 const EventPage = async ({ params }: { params: { id: string } }) => {
   const res = await api.events.getPublic(params.id);
 
+  const res2 = await api.events.getWishesPublic(params.id);
+
   if (!res) return;
 
   const qc = new QueryClient();
@@ -18,6 +20,10 @@ const EventPage = async ({ params }: { params: { id: string } }) => {
   qc.setQueryData(
     [["events", "getPublic"], { input: params.id, type: "query" }],
     res,
+  );
+  qc.setQueryData(
+    [["events", "getWishesPublic"], { input: params.id, type: "query" }],
+    res2,
   );
 
   return (

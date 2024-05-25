@@ -42,6 +42,15 @@ export default function RootLayout() {
             }}
           >
             <Stack.Screen
+              name="index"
+              options={{
+                headerShown: false,
+                headerStyle: { backgroundColor: "rgba(243, 245, 247, 1)" },
+                contentStyle: { backgroundColor: "rgba(243, 245, 247, 1)" },
+              }}
+            />
+
+            <Stack.Screen
               name="modals"
               options={{
                 headerShown: false,

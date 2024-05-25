@@ -34,6 +34,13 @@
   font-family: var(--neue-machina-ultrabold);
 }
 
+.headingXS {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 20px;
+  font-family: var(--neue-machina-ultrabold);
+}
+
 .subHeadingL {
   font-weight: 700;
   font-size: 18px;

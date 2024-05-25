@@ -15,6 +15,7 @@ import Spinner from "~/app/_components/spinner";
 import { UserAvatar } from "~/app/_components/userAvatar";
 import { api } from "~/utils/api";
 import { getAuthToken } from "~/utils/auth";
+import { useState } from "react";
 
 setDefaultOptions({ locale: ru });
 
@@ -133,11 +134,13 @@ const MainHeader = ({ user }: { user?: IUser }) => {
 };
 
 const EventsList = () => {
-  const { data, isFetching, isPending, error } = api.events.list.useQuery();
+  const { data, isRefetching, isLoading, error } = api.events.list.useQuery();
 
   const utils = api.useUtils();
 
-  if (isPending) {
+  const [allowSpiiner, setAllowSpinner] = useState(false);
+
+  if (isLoading) {
     return <Spinner />;
   }
 
@@ -168,9 +171,11 @@ const EventsList = () => {
         }
         refreshControl={
           <RefreshControl
-            refreshing={isFetching && !isPending}
+            refreshing={allowSpiiner && isRefetching}
             onRefresh={async () => {
+              setAllowSpinner(true);
               await utils.events.list.refetch();
+              setAllowSpinner(false);
             }}
           />
         }

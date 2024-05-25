@@ -7,6 +7,11 @@ import PeopleEmpty from "@assets/defImages/people_empty.png";
 import type { IGuestFull } from "@acme/api";
 
 import { Button } from "~/app/_components/button";
+import {
+  IconStatusMaybe,
+  IconStatusNo,
+  IconStatusYes,
+} from "~/app/_components/icons";
 import { Input } from "~/app/_components/input";
 import { EmptyList, PageHeader } from "~/app/_components/layoutElements";
 import Spinner from "~/app/_components/spinner";
@@ -58,18 +63,30 @@ export const GuestItem = ({ guest }: { guest: Omit<IGuestFull, "event"> }) => {
     >
       <Pressable>
         <View className="my-3 flex flex-row items-center justify-between px-4">
-          <View className="flex flex-row items-center gap-2.5">
-            <UserAvatar
-              user={guest.user}
-              gender={gender}
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                resizeMode: "contain",
-                display: "flex",
-              }}
-            />
+          <View className="flex flex-row items-center gap-3">
+            <View className="relative">
+              <UserAvatar
+                user={guest.user}
+                gender={gender}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  resizeMode: "contain",
+                  display: "flex",
+                }}
+              />
+
+              <View className="absolute right-[-4px] top-1 h-4 w-4">
+                {guest.status === "yes" ? (
+                  <IconStatusYes></IconStatusYes>
+                ) : guest.status === "no" ? (
+                  <IconStatusNo></IconStatusNo>
+                ) : (
+                  <IconStatusMaybe> </IconStatusMaybe>
+                )}
+              </View>
+            </View>
 
             <View>
               <Text className="captionL w-full">
@@ -97,7 +114,7 @@ export default function Index() {
   }
 
   const utils = api.useUtils();
-  const { data, isFetching, error, isPending, refetch } =
+  const { data, isFetching, isRefetching, error, isLoading, refetch } =
     api.events.getGuests.useQuery(eventId);
 
   const [searchQ, setSearchQ] = useState("");
@@ -112,7 +129,8 @@ export default function Index() {
     );
   }, [data, searchQ]);
 
-  if (isPending) {
+  const [allowSpiiner, setAllowSpinner] = useState(false);
+  if (isLoading) {
     return <Spinner />;
   }
 
@@ -138,9 +156,11 @@ export default function Index() {
         data={filtered}
         refreshControl={
           <RefreshControl
-            refreshing={isFetching}
+            refreshing={allowSpiiner && isRefetching}
             onRefresh={async () => {
+              setAllowSpinner(true);
               await refetch();
+              setAllowSpinner(false);
             }}
           />
         }

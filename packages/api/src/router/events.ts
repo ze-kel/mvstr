@@ -41,7 +41,10 @@ export const eventsRouter = {
 
   get: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.db.query.eventTable.findFirst({
-      where: eq(schema.eventTable.id, input),
+      where: and(
+        eq(schema.eventTable.id, input),
+        eq(schema.eventTable.userId, ctx.user.id),
+      ),
     });
   }),
 
@@ -58,23 +61,54 @@ export const eventsRouter = {
             profileImage: true,
           },
         },
-        wishes: {
-          with: {
-            wish: {
-              columns: {
-                id: true,
-                link: true,
-                description: true,
-                title: true,
-                price: true,
-                image: true,
-              },
-            },
-          },
-        },
       },
     });
   }),
+  getWishesPublic: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.query.wishConnectionsTable.findMany({
+        where: eq(schema.wishConnectionsTable.eventId, input),
+        with: {
+          wish: {
+            columns: {
+              id: true,
+              link: true,
+              description: true,
+              title: true,
+              price: true,
+              image: true,
+            },
+          },
+        },
+      });
+    }),
+
+  setStatusPublic: publicProcedure
+    .input(z.object({ id: z.string(), status: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .update(schema.wishConnectionsTable)
+        .set({ status: input.status })
+        .where(eq(schema.wishConnectionsTable.id, input.id));
+    }),
+
+  setGuestStatusPublic: publicProcedure
+    .input(z.object({ number: z.string(), status: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const u = await ctx.db.query.userTable.findFirst({
+        where: eq(schema.userTable.phone, input.number),
+      });
+
+      if (!u) return input.status;
+
+      await ctx.db
+        .update(schema.guestsTable)
+        .set({ status: input.status })
+        .where(eq(schema.guestsTable.userId, u.id));
+
+      return input.status;
+    }),
 
   create: protectedProcedure
     .input(ZNewEvent)
@@ -110,6 +144,20 @@ export const eventsRouter = {
         .returning();
     }),
 
+  updateReminder: protectedProcedure
+    .input(z.object({ date: z.date(), id: z.string(), text: z.string() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db
+        .update(schema.eventTable)
+        .set({ reminder: input.date, reminderText: input.text })
+        .where(
+          and(
+            eq(schema.eventTable.userId, ctx.user.id),
+            eq(schema.eventTable.id, input.id),
+          ),
+        );
+    }),
+
   delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
     return ctx.db
       .delete(schema.eventTable)
@@ -124,23 +172,19 @@ export const eventsRouter = {
   getGuests: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
+      const event = await ctx.db.query.eventTable.findFirst({
+        where: eq(schema.eventTable.id, input),
+      });
+
+      if (!event || event.userId !== ctx.user.id) return [];
+
       const r1 = await ctx.db.query.guestsTable.findMany({
         where: eq(schema.guestsTable.eventId, input),
         with: {
           user: true,
         },
+        orderBy: [schema.guestsTable.id],
       });
-
-      console.log(r1);
-
-      /*
-      const first = r1[0];
-      if (first) {
-        if (first.event.userId !== ctx.user.id) {
-          throw new Error("You do not have acess to guests for this event");
-        }
-      }
-    */
 
       return r1;
     }),

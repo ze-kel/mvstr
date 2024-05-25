@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FlatList, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalSearchParams } from "expo-router";
@@ -11,12 +12,13 @@ export default function Index({ noHeader }: { noHeader?: boolean }) {
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
 
   const utils = api.useUtils();
-  const { data, isFetching, error, isPending } =
+  const { data, isRefetching, error, isLoading } =
     api.wish.getAllWishes.useQuery();
 
   const eventWishes = api.events.getWishes.useQuery(eventId || "");
 
-  if (isPending || eventWishes.isPending) {
+  const [allowSpiiner, setAllowSpinner] = useState(false);
+  if (isLoading || eventWishes.isLoading) {
     return <Spinner />;
   }
 
@@ -41,10 +43,14 @@ export default function Index({ noHeader }: { noHeader?: boolean }) {
         data={inEvent}
         refreshControl={
           <RefreshControl
-            refreshing={isFetching}
+            refreshing={
+              allowSpiiner && (isRefetching || eventWishes.isRefetching)
+            }
             onRefresh={async () => {
+              setAllowSpinner(true);
               await utils.wish.getAllWishes.refetch();
               await eventWishes.refetch();
+              setAllowSpinner(false);
             }}
           />
         }

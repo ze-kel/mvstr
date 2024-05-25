@@ -32,6 +32,9 @@ export const eventTable = pgTable("events", {
   time: text("time"),
   description: text("description"),
   image: text("image"),
+  reminder: timestamp("reminder_date"),
+  reminderText: text("reminder_text"),
+  reminderSent: boolean("reminder_sent"),
 });
 
 export const guestsTable = pgTable("guests", {
@@ -85,6 +88,7 @@ export const wishConnectionsTable = pgTable("wishconnections", {
   eventId: text("event_id").references(() => eventTable.id, {
     onDelete: "cascade",
   }),
+  status: text("status"),
 });
 
 export const wishRelations = relations(wishConnectionsTable, ({ one }) => ({

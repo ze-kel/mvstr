@@ -1,4 +1,5 @@
 import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
+import { Image } from "expo-image";
 import { Link, useGlobalSearchParams } from "expo-router";
 import BlankImage from "@assets/defImages/blankitem.png";
 
@@ -10,7 +11,7 @@ import Spinner from "~/app/_components/spinner";
 import { WishItem } from "~/app/home/main/wishlist";
 import { api } from "~/utils/api";
 import { formatPrice } from "~/utils/priceFormater";
-import { Image } from "expo-image";
+import { useState } from "react";
 
 export const SelectWishItem = ({ wish }: { wish: IWish }) => {
   const { eventId } = useGlobalSearchParams<{ eventId?: string }>();
@@ -103,12 +104,13 @@ export default function Index({ noHeader }: { noHeader?: boolean }) {
   const { eventId } = useGlobalSearchParams<{ eventId: string }>();
 
   const utils = api.useUtils();
-  const { data, isFetching, error, isPending } =
+  const { data, isRefetching, error, isLoading } =
     api.wish.getAllWishes.useQuery();
 
   const eventWishes = api.events.getWishes.useQuery(eventId || "");
 
-  if (isPending || eventWishes.isPending) {
+  const [allowSpiiner, setAllowSpinner] = useState(false);
+  if (isLoading || eventWishes.isLoading) {
     return <Spinner />;
   }
 
@@ -140,10 +142,14 @@ export default function Index({ noHeader }: { noHeader?: boolean }) {
         }
         refreshControl={
           <RefreshControl
-            refreshing={isFetching}
+            refreshing={
+              allowSpiiner && (isRefetching || eventWishes.isRefetching)
+            }
             onRefresh={async () => {
+              setAllowSpinner(true);
               await utils.wish.getAllWishes.refetch();
               await eventWishes.refetch();
+              setAllowSpinner(false);
             }}
           />
         }
