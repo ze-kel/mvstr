@@ -1,12 +1,10 @@
 import * as React from "react";
-import { SafeAreaView, Text, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { Tabs, useGlobalSearchParams, usePathname } from "expo-router";
+import { View } from "react-native";
+import { Tabs } from "expo-router";
 
 import {
   IconAll,
   IconPeople,
-  IconPlus,
   IconTasks,
   IconWishList,
 } from "~/app/_components/icons";

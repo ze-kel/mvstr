@@ -1,18 +1,14 @@
 import type { ExpoRouter } from "expo-router/types/expo-router";
-import { useCallback, useMemo, useRef } from "react";
 import { Pressable, SafeAreaView, Text, View } from "react-native";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
-import { Link, useGlobalSearchParams } from "expo-router";
+import { Link, useGlobalSearchParams, useLocalSearchParams } from "expo-router";
 import Logo from "@assets/logo.png";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 
 import { Button } from "~/app/_components/button";
 import { EventAvatar } from "~/app/_components/eventAvatar";
 import { IconChevronLeft, IconPlus } from "~/app/_components/icons";
 import { UserAvatar } from "~/app/_components/userAvatar";
 import { api } from "~/utils/api";
-import { clearAuthToken } from "~/utils/auth";
 import { cn } from "~/utils/cn";
 import { useHandleError } from "~/utils/useHandleError";
 
@@ -79,6 +75,8 @@ export const PageHeader = ({
 };
 
 export const UserMenu = () => {
+  const { eventId } = useGlobalSearchParams<{ eventId: string }>();
+
   const u = api.user.getMe.useQuery();
   useHandleError(u.error);
 
@@ -86,7 +84,10 @@ export const UserMenu = () => {
 
   return (
     <>
-      <Link asChild href={"/modals/me"}>
+      <Link
+        asChild
+        href={{ pathname: "/modals/me?eventId=[eventId]", params: { eventId } }}
+      >
         <Pressable>
           <UserAvatar
             user={u.data}
@@ -105,7 +106,7 @@ export const UserMenu = () => {
 };
 
 const EventHead = () => {
-  const { eventId, taskId } = useGlobalSearchParams<{
+  const { eventId, taskId } = useLocalSearchParams<{
     eventId: string;
     taskId: string;
   }>();
@@ -181,7 +182,7 @@ export const TitleUserHeader = ({
   hideUser?: boolean;
   forceTitle?: boolean;
 }) => {
-  const { eventId } = useGlobalSearchParams<{
+  const { eventId } = useLocalSearchParams<{
     eventId?: string;
   }>();
 

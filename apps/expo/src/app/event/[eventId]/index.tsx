@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Calendar from "expo-calendar";
+import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import InvitationPic from "@assets/invitation.png";
-import { differenceInDays, format, isAfter } from "date-fns";
-
-import type { IEvent } from "@acme/api";
+import { addHours, differenceInDays, format, isAfter } from "date-fns";
 
 import type { IEventBase } from "../../../../../../packages/api/dist/router/events";
 import { Button } from "~/app/_components/button";
-import { PageHeader } from "~/app/_components/layoutElements";
+import { IconCopy } from "~/app/_components/icons";
 import Spinner from "~/app/_components/spinner";
 import { api } from "~/utils/api";
 import { declOfNum } from "~/utils/declOfNum";
@@ -50,12 +50,24 @@ const ReminderView = ({ event }: { event: IEventBase }) => {
         </>
       )}
 
-      {event.reminder && !event.reminderSent && (
+      {event.reminder &&
+      !event.reminderSent &&
+      isAfter(new Date(), event.reminder) ? (
+        <>
+          <Text className="subHeadingL">Приглашения рассылаются</Text>
+          <Text className="textXL">
+            Приглашения готовятся к отправке и будут отправлены в течение часа.
+          </Text>
+          <Button className="mt-2" variant={"inverse"}>
+            Изменить дату отправки
+          </Button>
+        </>
+      ) : (
         <>
           <Text className="subHeadingL">Рассылка запланирована</Text>
           <Text className="textXL">
             Приглашения будут отправлены{" "}
-            {format(event.reminder, "dd MMMM в hh:mm")}
+            {format(event.reminder as Date, "dd MMMM в hh:mm")}
           </Text>
           <Link
             href={{
@@ -71,6 +83,80 @@ const ReminderView = ({ event }: { event: IEventBase }) => {
         </>
       )}
     </View>
+  );
+};
+
+const AddToCalendar = () => {
+  const { eventId } = useLocalSearchParams<{ eventId: string }>();
+
+  const { data, isLoading } = api.events.get.useQuery(eventId || "");
+
+  const [sucess, setSucess] = useState(false);
+
+  const [list, setList] = useState<Calendar.Calendar[]>([]);
+
+  const buttonToGet = async () => {
+    if (list.length) {
+      setList([]);
+      return;
+    }
+
+    const { status } = await Calendar.requestCalendarPermissionsAsync();
+    if (status === "granted") {
+      const calendars = await Calendar.getCalendarsAsync(
+        Calendar.EntityTypes.EVENT,
+      );
+
+      setList(calendars);
+    }
+  };
+
+  const addToId = async (id: string) => {
+    const { status } = await Calendar.requestCalendarPermissionsAsync();
+    if (status === "granted") {
+      await Calendar.createEventAsync(id, {
+        title: data?.name,
+        startDate: data?.date,
+        endDate: data?.date ? addHours(data.date, 3) : undefined,
+
+        location: data?.place || "",
+        notes: data?.description || "",
+      });
+
+      setList([]);
+      setSucess(true);
+    }
+  };
+
+  return (
+    <>
+      <Button size={"s"} variant={"inverse"} onPress={buttonToGet}>
+        {sucess
+          ? "Добавлено в календарь"
+          : list.length
+            ? "Выберите календарь"
+            : "Добавить в календарь"}
+      </Button>
+
+      {list.length ? (
+        <>
+          <ScrollView className="mt-2 flex max-h-64 flex-col gap-2">
+            <View className="flex flex-col gap-2">
+              {list.map((v) => (
+                <Button
+                  key={v.id}
+                  onPress={() => addToId(v.id)}
+                  size={"s"}
+                  variant={"inverse"}
+                >
+                  {v.title}
+                </Button>
+              ))}
+            </View>
+          </ScrollView>
+        </>
+      ) : null}
+    </>
   );
 };
 
@@ -107,6 +193,12 @@ const EventPage = () => {
     );
   }
 
+  const invLink = `https://mvstr.vercel.app/event/${eventId}`;
+
+  const copyInvLink = async () => {
+    await Clipboard.setStringAsync(invLink);
+  };
+
   const toDate = differenceInDays(data.date, new Date());
 
   return (
@@ -129,6 +221,8 @@ const EventPage = () => {
             </>
           )}
         </Text>
+
+        <AddToCalendar />
 
         <View className="mt-3 rounded-2xl border border-stroke-secondary px-4 py-5">
           <Text className="headingXS">О мероприятии</Text>
@@ -155,11 +249,26 @@ const EventPage = () => {
               Ссылка которую можно отправить гостям
             </Text>
 
-            <Link href={`https://mvstr.vercel.app/event/${eventId}`} asChild>
-              <Button className="mt-2" variant={"stroke"}>
-                Открыть
+            <View className=" mt-2 flex flex-row items-center gap-2 ">
+              <Link href={invLink} asChild>
+                <Button className="flex-1" variant={"stroke"}>
+                  Открыть
+                </Button>
+              </Link>
+              <Button
+                onPress={copyInvLink}
+                icon
+                className="h-[44px] w-[44px] items-center"
+                size={"sIcon"}
+                variant={"stroke"}
+              >
+                <IconCopy
+                  width={20}
+                  height={20}
+                  fill={"rgba(61, 56, 73, 1)"}
+                ></IconCopy>
               </Button>
-            </Link>
+            </View>
           </View>
         </View>
 

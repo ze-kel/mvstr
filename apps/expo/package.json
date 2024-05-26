@@ -60,7 +60,11 @@
     "react-native-svg": "15.2.0",
     "superjson": "2.2.1",
     "tailwind-merge": "^2.2.2",
-    "expo-contacts": "~13.0.3"
+    "expo-contacts": "~13.0.3",
+    "expo-clipboard": "~6.0.3",
+    "expo-calendar": "~13.0.5",
+    "expo-haptics": "~13.0.1",
+    "expo-blur": "~13.0.2"
   },
   "devDependencies": {
     "@acme/api": "*",

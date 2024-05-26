@@ -1,12 +1,16 @@
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, useGlobalSearchParams, useRouter } from "expo-router";
+import {
+  Link,
+  useGlobalSearchParams,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
 import PeopleEmpty from "@assets/defImages/people_empty.png";
 
 import type { IGuestFull } from "@acme/api";
 
-import { Button } from "~/app/_components/button";
 import {
   IconStatusMaybe,
   IconStatusNo,

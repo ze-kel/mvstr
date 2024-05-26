@@ -52,5 +52,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         contactsPermission: "Allow $(PRODUCT_NAME) to access your contacts.",
       },
     ],
+    [
+      "expo-calendar",
+      {
+        calendarPermission: "The app needs to access your calendar",
+      },
+    ],
   ],
 });

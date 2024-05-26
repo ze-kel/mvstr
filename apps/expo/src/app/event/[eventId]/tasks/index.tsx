@@ -3,9 +3,9 @@ import { useState } from "react";
 import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle, ClipPath, Defs, G, Path } from "react-native-svg";
-import { Link, useGlobalSearchParams } from "expo-router";
+import { Link, useGlobalSearchParams, useLocalSearchParams } from "expo-router";
 import TasksEmpty from "@assets/defImages/tasks_empty.png";
-import { format, isToday, setDefaultOptions } from "date-fns";
+import { differenceInDays, format, isToday, setDefaultOptions } from "date-fns";
 import { ru } from "date-fns/locale";
 
 import type { ITask } from "@acme/api";
@@ -14,6 +14,7 @@ import { IconCheck } from "~/app/_components/icons";
 import { EmptyList, PageHeader } from "~/app/_components/layoutElements";
 import Spinner from "~/app/_components/spinner";
 import { api } from "~/utils/api";
+import { cn } from "~/utils/cn";
 
 setDefaultOptions({ locale: ru });
 
@@ -52,10 +53,10 @@ const TaskItem = ({ task }: { task: ITask }) => {
   });
 
   return (
-    <View className="px-4">
-      <View className="flex flex-row items-center rounded-2xl bg-surface-secondary p-3 ">
+    <View className={cn("px-4", task.completed && "opacity-50")}>
+      <View className="flex flex-row items-center rounded-2xl bg-surface-secondary">
         <Pressable
-          className="h-full pl-2 pr-4"
+          className="flex h-full items-center  py-3 pl-5 pr-4"
           onPress={() => {
             void mutate.mutateAsync({
               taskId: task.id,
@@ -63,7 +64,7 @@ const TaskItem = ({ task }: { task: ITask }) => {
             });
           }}
         >
-          <View className="bg-surface-action flex h-5 w-5 items-center justify-center rounded-[6px] border border-text-accent">
+          <View className="bg-surface-action  h-5 w-5 items-center justify-center rounded-[6px] border border-text-accent">
             {task.completed && (
               <IconCheck width={12} height={12} fill={"rgba(86, 58, 220, 1)"} />
             )}
@@ -77,10 +78,19 @@ const TaskItem = ({ task }: { task: ITask }) => {
           }}
         >
           <Pressable>
-            <View className="flex flex-col">
-              <Text className="subHeadingL">{task.title}</Text>
+            <View className="flex flex-col py-3">
+              <Text
+                className={cn("subHeadingL", task.completed && "line-through")}
+              >
+                {task.title}
+              </Text>
               {task.description && (
-                <Text className="textM text-text-tertiary">
+                <Text
+                  className={cn(
+                    "textM text-text-tertiary",
+                    task.completed && "line-through",
+                  )}
+                >
                   {task.description}
                 </Text>
               )}
@@ -165,6 +175,17 @@ export default function Index() {
     return <Spinner />;
   }
 
+  const sortedData = data?.sort((a, b) => {
+    if (!a.time && b.time) return -1;
+    if (!b.time && a.time) return 1;
+
+    if (a.time && b.time) {
+      return differenceInDays(a.time, b.time);
+    }
+
+    return a.title.localeCompare(b.title);
+  });
+
   return (
     <>
       <PageHeader
@@ -176,7 +197,7 @@ export default function Index() {
         title="Список моих задач"
       />
       <FlatList
-        data={data}
+        data={sortedData}
         refreshControl={
           <RefreshControl
             refreshing={allowSpiiner && isRefetching}

@@ -26,7 +26,9 @@ const EditEvent = () => {
   const utils = api.useUtils();
 
   const [when, setWhen] = useState("later");
-  const [date, setDate] = useState(add(new Date(), { days: 1 }));
+  const [date, setDate] = useState(
+    data?.reminder || add(new Date(), { days: 1 }),
+  );
   const [text, setText] = useState(
     data?.reminderText ||
       `${me.data?.firstName} приглашает тебя на ${data?.name}`,

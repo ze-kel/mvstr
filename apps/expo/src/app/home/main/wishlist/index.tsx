@@ -26,6 +26,8 @@ setDefaultOptions({ locale: ru });
 export const WishItem = ({ wish }: { wish: IWish }) => {
   const { eventId } = useGlobalSearchParams<{ eventId?: string }>();
 
+  const [isWaitingForImage, setIsWaiting] = useState(false);
+
   return (
     <Link
       asChild
@@ -41,6 +43,8 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
         <View className="">
           <View className="flex w-full overflow-hidden rounded-[20px]">
             <Image
+              onLoadStart={() => setIsWaiting(true)}
+              onLoadEnd={() => setIsWaiting(false)}
               source={wish.image || BlankImage}
               style={{
                 flex: 1,
