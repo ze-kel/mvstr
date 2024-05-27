@@ -91,24 +91,32 @@ export async function GET(request: Request): Promise<Response> {
     const { bdate, first_name, last_name, photo_200, sex } =
       await getMoreInfo(access_token);
 
+    if (!phone) {
+      return new Response(null, {
+        status: 403,
+      });
+    }
+
     const existingUser = await db.query.userTable.findFirst({
-      where: eq(schema.userTable.vkId, user_id),
+      where: eq(schema.userTable.phone, phone),
     });
 
-    if (existingUser) {
-      await db.update(schema.userTable).set({
+    if (!existingUser) {
+      const userId = generateId(15);
+
+      await db.insert(schema.userTable).values({
+        id: userId,
+        vkId: user_id,
         birthdayVk: bdate,
         firstName: first_name,
         lastName: last_name,
         profileImage: photo_200,
         vkConnected: true,
         vkAccessToken: access_token,
-        gender: sex,
-        phone,
-        email,
+        phone: phone,
       });
 
-      const session = await lucia.createSession(existingUser.id, {});
+      const session = await lucia.createSession(userId, {});
       const sessionCookie = lucia.createSessionCookie(session.id);
       cookies().set(
         sessionCookie.name,
@@ -124,22 +132,22 @@ export async function GET(request: Request): Promise<Response> {
       });
     }
 
-    const userId = generateId(15);
+    if (!existingUser.registered) {
+      await db.update(schema.userTable).set({
+        birthdayVk: bdate,
+        firstName: first_name,
+        lastName: last_name,
+        profileImage: photo_200,
+        vkConnected: true,
+        vkAccessToken: access_token,
+        gender: String(sex) === "1" ? "female" : "male",
+        phone,
+        email,
+        registered: true,
+      });
+    }
 
-    await db.insert(schema.userTable).values({
-      id: userId,
-      vkId: user_id,
-      birthdayVk: bdate,
-      firstName: first_name,
-      lastName: last_name,
-      profileImage: photo_200,
-      vkConnected: true,
-      vkAccessToken: access_token,
-      phone,
-      email,
-    });
-
-    const session = await lucia.createSession(userId, {});
+    const session = await lucia.createSession(existingUser.id, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
     cookies().set(
       sessionCookie.name,
