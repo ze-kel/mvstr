@@ -23,12 +23,16 @@ export const metadata: Metadata = {
       : "http://localhost:3000",
   ),
   title: "Место встречи",
-  description: "Simple monorepo with shared backend for web & mobile apps",
+  description: "",
   openGraph: {
-    title: "Месьл всьоечт",
+    title: "Место встречи",
     description: "",
     url: "",
     siteName: "",
+  },
+  icons: {
+    shortcut: "/favicon.ico",
+    icon: "/favicon-32x32.png",
   },
 };
 
