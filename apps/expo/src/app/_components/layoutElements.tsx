@@ -113,9 +113,9 @@ const EventHead = () => {
   const event = api.events.get.useQuery(eventId || "");
 
   return (
-    <View className="flex flex-row items-center gap-2 px-2">
+    <View className="flex flex-row items-center">
       <Link href={"/home/main"} asChild>
-        <Pressable>
+        <Pressable className="flex h-[44px] items-center justify-center  px-3.5">
           <IconChevronLeft
             width={20}
             height={20}
@@ -129,6 +129,7 @@ const EventHead = () => {
           borderWidth: 1,
           padding: 3,
           borderRadius: 12,
+          marginRight: 8,
           borderColor: "rgba(86, 58, 220, 1)",
         }}
       >

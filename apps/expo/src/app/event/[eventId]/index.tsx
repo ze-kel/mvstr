@@ -53,7 +53,7 @@ const ReminderView = ({ event }: { event: IEventBase }) => {
           <Text className="subHeadingL">Приглашения отправлены</Text>
           <Text className="textXL">
             Приглашения были отправлены{" "}
-            {format(event.reminder, "dd MMMM в hh:mm")}
+            {format(event.reminder, "dd MMMM в HH:mm")}
           </Text>
         </>
       )}
@@ -75,7 +75,7 @@ const ReminderView = ({ event }: { event: IEventBase }) => {
           <Text className="subHeadingL">Рассылка запланирована</Text>
           <Text className="textXL">
             Приглашения будут отправлены{" "}
-            {format(event.reminder as Date, "dd MMMM в hh:mm")}
+            {format(event.reminder as Date, "dd MMMM в HH:mm")}
           </Text>
           <Link
             href={{
@@ -213,7 +213,7 @@ const EventPage = () => {
     <>
       <ScrollView className=" px-4 " style={{ zIndex: 1, elevation: 1 }}>
         <Text className="headingS mt-4 text-center">
-          {format(data.date, "d MMMM hh:mm")}
+          {format(data.date, "d MMMM HH:mm")}
         </Text>
 
         <Text className="textXXL text-center">
@@ -238,15 +238,9 @@ const EventPage = () => {
           <Text className="textXXL">{data.description || "—"}</Text>
         </View>
 
-        <View className="mt-2 flex flex-row gap-2">
-          <View className="mt-2 flex-1 rounded-2xl bg-buttons-hover-secondary px-4 py-5">
-            <Text className="headingXS">Место</Text>
-            <Text className="textXXL">{data.place || "—"}</Text>
-          </View>
-          <View className="mt-2 flex-1 rounded-2xl bg-buttons-hover-secondary px-4 py-5">
-            <Text className="headingXS">Тип</Text>
-            <Text className="textXXL">{data.type || "—"}</Text>
-          </View>
+        <View className="mt-2 flex-1 rounded-2xl bg-buttons-hover-secondary px-4 py-5">
+          <Text className="headingXS">Место</Text>
+          <Text className="textXXL">{data.place || "—"}</Text>
         </View>
 
         <View className="mt-4 flex flex-row items-center gap-8  rounded-2xl border border-stroke-secondary px-4 py-5">

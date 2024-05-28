@@ -351,30 +351,23 @@ export const EventUi = ({ id }: { id: string }) => {
         </div>
 
         <div className="mt-5 flex gap-2">
-          <div className="rounded-lg bg-[#5D41E7] p-3 text-white">
-            ⏰ {format(data.date, "d MMMM, hh:mm")}
+          <div className="rounded-lg bg-[#5D41E7] px-3 py-2 text-white">
+            ⏰ {format(data.date, "d MMMM, HH:mm")}
           </div>{" "}
-          <div className="rounded-lg bg-[#5D41E7] p-3 text-white">
+          <div className="rounded-lg bg-[#5D41E7] px-3 py-2 text-white">
             😄 {data.guests.length}{" "}
             {declOfNum(data.guests.length, ["человек", "человека", "человек"])}
           </div>
         </div>
         <div className="textXXL mt-2.5 text-white">{data.description}</div>
+
+        <div className="mt-4 flex min-h-12 w-full flex-col justify-between gap-4 rounded-2xl bg-[#5D41E7] px-4 py-5">
+          <div className="headingXS text-white">Место</div>
+          <div className="textXXL text-white">{data.place || "—"}</div>
+        </div>
       </div>
 
-      <div className="mx-auto mt-[54px] max-w-[400px] rounded-[32px] bg-surface-inverse px-4 py-[54px]">
-        <div className="headingM ">О мероприятии</div>
-        <div className="mb-[54px] flex gap-2">
-          <div className="mt-2 flex min-h-12 w-full flex-col justify-between gap-4 rounded-2xl bg-buttons-hover-secondary px-4 py-5">
-            <div className="headingXS">Место</div>
-            <div className="textXXL">{data.place || "—"}</div>
-          </div>
-          <div className="mt-2 flex min-h-12 w-full flex-col justify-between gap-4 rounded-2xl bg-buttons-hover-secondary px-4 py-5">
-            <div className="headingXS">Тип</div>
-            <div className="textXXL">{data.type || "—"}</div>
-          </div>
-        </div>
-
+      <div className="mx-auto mt-[32px] max-w-[400px] rounded-[32px] bg-surface-inverse px-4 py-[54px]">
         <Wishlist id={id} />
         <CanUCum event={data} />
       </div>

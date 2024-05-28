@@ -177,7 +177,6 @@ export const EventEditor = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const [title, setTitle] = useState(initial?.name || "");
-  const [type, setType] = useState(initial?.type || "");
   const [place, setPlace] = useState(initial?.place || "");
   const [date, setDate] = useState(
     initial?.date || add(new Date(), { days: 14 }),
@@ -208,13 +207,6 @@ export const EventEditor = ({
             value={title}
             onChangeText={setTitle}
           />
-          <Text className="subHeadingM mt-5">Выберите тип мероприятия</Text>
-          <Input
-            className="mt-3"
-            placeholder="Выберите тип мероприятия"
-            value={type}
-            onChangeText={setType}
-          />
           <Text className="subHeadingM mt-5">Место проведения</Text>
           <Input
             className="mt-3"
@@ -241,8 +233,8 @@ export const EventEditor = ({
 
               await submitHandler({
                 title,
-                type,
                 place,
+                type: "",
                 date,
                 description,
                 image,
@@ -251,7 +243,6 @@ export const EventEditor = ({
               setIsLoading(false);
 
               setTitle("");
-              setType("");
               setPlace("");
               setDate(add(new Date(), { days: 14 }));
               setDescription("");

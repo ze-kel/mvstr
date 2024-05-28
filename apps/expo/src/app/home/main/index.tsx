@@ -1,4 +1,5 @@
 import type { SvgProps } from "react-native-svg";
+import { useState } from "react";
 import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { ClipPath, Defs, G, Path } from "react-native-svg";
@@ -15,7 +16,6 @@ import Spinner from "~/app/_components/spinner";
 import { UserAvatar } from "~/app/_components/userAvatar";
 import { api } from "~/utils/api";
 import { getAuthToken } from "~/utils/auth";
-import { useState } from "react";
 
 setDefaultOptions({ locale: ru });
 
@@ -151,13 +151,7 @@ const EventsList = () => {
         ListEmptyComponent={
           <EmptyList
             image={EventsEmpty}
-            text="Время сделать первый шаг"
-            subtext={
-              <>
-                У вас нет мероприятий,{"\n"}самое время создать новое
-                мероприятие
-              </>
-            }
+            text="Сделайте первый шаг"
             buttonText="Создать мероприятие"
             buttonHref={{ pathname: "/home/create" }}
           />

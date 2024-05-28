@@ -194,7 +194,7 @@ export default function Index() {
           pathname: "/event/[eventId]/tasks/modal/[taskId]",
           params: { eventId, taskId: "create" },
         }}
-        title="Список моих задач"
+        title="Список задач"
       />
       <FlatList
         data={sortedData}
