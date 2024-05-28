@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, useGlobalSearchParams, useRouter } from "expo-router";
+import { useGlobalSearchParams, useRouter } from "expo-router";
 
 import { Button } from "~/app/_components/button";
 import WIndex from "~/app/event/[eventId]/people/index";
@@ -13,7 +13,7 @@ export default function Index() {
 
   return (
     <>
-      <Steps current={3} total={4} />
+      <Steps current={3} total={3} />
       <WIndex />
       <View className="px-4 pt-4">
         <Button

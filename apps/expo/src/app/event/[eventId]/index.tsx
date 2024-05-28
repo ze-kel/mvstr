@@ -16,29 +16,37 @@ import { api } from "~/utils/api";
 import { declOfNum } from "~/utils/declOfNum";
 
 const ReminderView = ({ event }: { event: IEventBase }) => {
+  if (!event.reminder) {
+    return (
+      <View className="mt-2 rounded-2xl border border-buttons-hover-primary bg-[#ECECFF] px-4 py-5">
+        <View className="flex items-center justify-center">
+          {!event.reminder && (
+            <>
+              <Text className="subHeadingL">Рассылка не создана</Text>
+              <Text className="textXL">
+                Вы можете сделать рассылку приглашений гостям
+              </Text>
+              <Link
+                href={{
+                  pathname: "/modals/sendedit/[eventId]",
+                  params: { eventId: event.id },
+                }}
+                asChild
+              >
+                <Button className="mt-2" variant={"inverse"}>
+                  Отправить или запланировать
+                </Button>
+              </Link>
+            </>
+          )}
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View className="mt-2 rounded-2xl border border-buttons-hover-primary bg-[#ECECFF] px-4 py-5">
       <View className="flex items-center justify-center"></View>
-
-      {!event.reminder && (
-        <>
-          <Text className="subHeadingL">Рассылка не создана</Text>
-          <Text className="textXL">
-            Вы можете сделать рассылку приглашений гостям
-          </Text>
-          <Link
-            href={{
-              pathname: "/modals/sendedit/[eventId]",
-              params: { eventId: event.id },
-            }}
-            asChild
-          >
-            <Button className="mt-2" variant={"inverse"}>
-              Отправить или запланировать
-            </Button>
-          </Link>
-        </>
-      )}
 
       {event.reminder && event.reminderSent && (
         <>
@@ -52,7 +60,7 @@ const ReminderView = ({ event }: { event: IEventBase }) => {
 
       {event.reminder &&
       !event.reminderSent &&
-      isAfter(new Date(), event.reminder) ? (
+      isAfter(new Date(), event.reminder || new Date()) ? (
         <>
           <Text className="subHeadingL">Приглашения рассылаются</Text>
           <Text className="textXL">
