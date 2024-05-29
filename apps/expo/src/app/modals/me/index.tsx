@@ -20,7 +20,7 @@ const UpdatesCheck = () => {
   const check = async () => {
     setIsWorking(true);
     const update = await Updates.checkForUpdateAsync();
-    if (update) {
+    if (update.isAvailable) {
       setIsUpdate("available");
     } else {
       setIsUpdate("latest");
