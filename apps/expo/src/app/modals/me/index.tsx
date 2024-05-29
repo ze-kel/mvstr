@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useRouter } from "expo-router";
+import * as Updates from "expo-updates";
 
 import type { UserFormData } from "~/app/login/register/[tokenId]";
 import { Button } from "~/app/_components/button";
@@ -10,6 +11,50 @@ import { maskDBNumber } from "~/app/event/[eventId]/people";
 import { UserDataForm } from "~/app/login/register/[tokenId]";
 import { api } from "~/utils/api";
 import { clearAuthToken } from "~/utils/auth";
+
+const UpdatesCheck = () => {
+  const [isUpdate, setIsUpdate] = useState("latest");
+
+  const [isWorking, setIsWorking] = useState(false);
+
+  const check = async () => {
+    setIsWorking(true);
+    const update = await Updates.checkForUpdateAsync();
+    if (update) {
+      setIsUpdate("available");
+    } else {
+      setIsUpdate("latest");
+    }
+    setIsWorking(false);
+  };
+
+  async function onFetchUpdateAsync() {
+    setIsWorking(true);
+    await Updates.fetchUpdateAsync();
+    await Updates.reloadAsync();
+    setIsWorking(false);
+  }
+
+  return (
+    <View className="mt-6">
+      {isUpdate === "unknown" && (
+        <Button variant={"stroke"} loading={isWorking} onPress={check}>
+          Проверить наличие обновления
+        </Button>
+      )}
+      {isUpdate === "available" && (
+        <Button loading={isWorking} onPress={onFetchUpdateAsync}>
+          Загрузить обновление
+        </Button>
+      )}
+      {isUpdate === "latest" && (
+        <Button variant={"inverse"} disabled>
+          Вы на последней версии
+        </Button>
+      )}
+    </View>
+  );
+};
 
 export default function Index() {
   const { data, refetch } = api.user.getMe.useQuery();
@@ -55,16 +100,16 @@ export default function Index() {
           onCommit={handler}
         />
         <View className="mx-4 mt-5 h-0.5 rounded-lg bg-icons-tertiary opacity-10"></View>
-        <View className="px-4">
-          <Button
-            loading={isLoggingOut}
-            onPress={logout}
-            className=" mt-5 w-full "
-            variant={"stroke"}
-          >
-            Выйти
-          </Button>
-        </View>
+        <Button
+          loading={isLoggingOut}
+          onPress={logout}
+          className="mt-5 w-full "
+          variant={"stroke"}
+        >
+          Выйти
+        </Button>
+
+        <UpdatesCheck />
       </KeyboardAwareScrollView>
     </View>
   );
