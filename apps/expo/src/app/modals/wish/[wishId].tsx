@@ -199,18 +199,11 @@ const EditMode = () => {
   // Note that Im not revalidating here becuase that will automatically happen
   // when we navigate to other page after saving
   const mutate = api.wish.updateWish.useMutation({
-    onMutate: (updatedWish) => {
-      utils.wish.getAllWishes.setData(undefined, (data) => {
-        if (!data) return data;
-
-        const u = data.map((t) => {
-          if (t.id !== updatedWish.wishId) return t;
-
-          return { ...t, ...updatedWish.update };
-        });
-
-        return u;
-      });
+    onSuccess: (updatedWish) => {
+      utils.wish.getAllWishes.invalidate();
+      if (eventId) {
+        utils.events.getWishes.invalidate(eventId);
+      }
     },
   });
 
@@ -262,11 +255,21 @@ const CreateMode = () => {
 
   const router = useRouter();
 
+  const utils = api.useUtils();
+
   const mutate = api.wish.addWish.useMutation({});
+  const mutateToEvent = api.events.addWish.useMutation({});
 
   const handler = async (v: INewWish) => {
-    await mutate.mutateAsync(v);
+    const res = await mutate.mutateAsync(v);
 
+    if (eventId) {
+      await mutateToEvent.mutateAsync({ event: eventId, wish: res.id });
+      await utils.events.getWishes.invalidate(eventId);
+      utils.wish.getAllWishes.invalidate();
+    } else {
+      await utils.wish.getAllWishes.invalidate();
+    }
     router.dismiss();
   };
 

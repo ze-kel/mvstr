@@ -3,7 +3,7 @@ import { FlatList, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useGlobalSearchParams } from "expo-router";
 
-import { PageHeader } from "~/app/_components/layoutElements";
+import { EmptyList, PageHeader } from "~/app/_components/layoutElements";
 import Spinner from "~/app/_components/spinner";
 import { WishItem } from "~/app/home/main/wishlist";
 import { api } from "~/utils/api";
@@ -41,6 +41,16 @@ export default function Index({ noHeader }: { noHeader?: boolean }) {
       )}
       <FlatList
         data={inEvent}
+        ListEmptyComponent={
+          <EmptyList
+            text={"Для этого мероприятия пока не добавлено желаний"}
+            buttonText="Добавить желание"
+            buttonHref={{
+              pathname: "/modals/wish/[wishId]?eventId=[eventId]",
+              params: { eventId, wishId: "create" },
+            }}
+          />
+        }
         refreshControl={
           <RefreshControl
             refreshing={

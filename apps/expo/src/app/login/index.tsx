@@ -4,7 +4,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Linking from "expo-linking";
-import { Link, Redirect, Stack, useRootNavigationState } from "expo-router";
+import {
+  Link,
+  Redirect,
+  Stack,
+  useRootNavigationState,
+  useRouter,
+} from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 
 import { Button } from "~/app/_components/button";
@@ -61,7 +67,7 @@ export default function Index() {
   const rootNavigationState = useRootNavigationState();
   const token = getAuthToken();
 
-  const [_, setKey] = useState(1);
+  const router = useRouter();
 
   if (rootNavigationState.key && token) return <Redirect href={"/home/"} />;
 
@@ -89,7 +95,8 @@ export default function Index() {
         <LoginWithVk
           onToken={(v) => {
             setAuthTokenSync(v);
-            setKey((v) => v + 1);
+            router.dismissAll();
+            router.replace("/home");
           }}
         />
       </View>

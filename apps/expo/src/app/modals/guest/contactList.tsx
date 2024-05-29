@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as Contacts from "expo-contacts";
 
 import type { ToAdd } from "~/app/modals/guest/[guestId]";
@@ -122,6 +123,7 @@ export const ContactList = ({
           }}
         />
       }
+      ListFooterComponent={<SafeAreaView edges={["bottom"]} />}
       ListEmptyComponent={
         <EmptyList
           text={"Нет контактов"}

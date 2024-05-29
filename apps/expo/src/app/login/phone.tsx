@@ -142,12 +142,12 @@ const PhoneLogin = () => {
         });
       } else {
         await setAuthToken(res.token);
+        router.dismissAll();
         router.replace("/home");
       }
     } catch (e) {
       if (e instanceof TRPCClientError) {
         if (e.message === "Wrong code") {
-          console.log("aaa");
           setError("Неверный код");
         }
       }

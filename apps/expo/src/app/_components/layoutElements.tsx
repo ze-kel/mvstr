@@ -217,7 +217,7 @@ export const EmptyList = ({
   return (
     <View
       className={cn(
-        "flex h-full flex-col items-center justify-center",
+        "flex h-full flex-col items-center justify-center px-4",
         className,
       )}
     >

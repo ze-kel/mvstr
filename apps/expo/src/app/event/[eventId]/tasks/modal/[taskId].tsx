@@ -52,12 +52,14 @@ const TaskEditor = ({
       <TextInput
         defaultValue={task.current.title}
         onChangeText={(v) => (task.current.title = v)}
-        className="headingM mt-4 h-14 "
+        placeholderTextColor={"rgba(185, 184, 188, 1)"}
+        className="headingM mt-4 h-14"
         placeholder="Название задачи"
         autoFocus
       />
       <TextInput
         defaultValue={task.current.description}
+        placeholderTextColor={"rgba(185, 184, 188, 1)"}
         onChangeText={(v) => (task.current.description = v)}
         className="textXXL mt-1"
         placeholder="Описание задачи"

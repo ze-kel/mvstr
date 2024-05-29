@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { FlatList, Pressable, RefreshControl, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { Link, useGlobalSearchParams } from "expo-router";
 import BlankImage from "@assets/defImages/blankitem.png";
@@ -11,7 +13,6 @@ import Spinner from "~/app/_components/spinner";
 import { WishItem } from "~/app/home/main/wishlist";
 import { api } from "~/utils/api";
 import { formatPrice } from "~/utils/priceFormater";
-import { useState } from "react";
 
 export const SelectWishItem = ({ wish }: { wish: IWish }) => {
   const { eventId } = useGlobalSearchParams<{ eventId?: string }>();
@@ -130,16 +131,17 @@ export default function Index({ noHeader }: { noHeader?: boolean }) {
         data={data}
         ListEmptyComponent={
           <EmptyList
-            className="mt-10"
+            className="mt-10 px-4"
             text={"У вас пока не добавлено ни одного желания"}
             subtext="Добавьте свое первое"
             buttonText="Добавить желание"
             buttonHref={{
               pathname: "/modals/wish/[wishId]?eventId=[eventId]",
-              params: { eventId },
+              params: { eventId, wishId: "create" },
             }}
           />
         }
+        ListFooterComponent={<SafeAreaView edges={["bottom"]} />}
         refreshControl={
           <RefreshControl
             refreshing={
