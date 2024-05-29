@@ -13,7 +13,7 @@ import { api } from "~/utils/api";
 import { clearAuthToken } from "~/utils/auth";
 
 const UpdatesCheck = () => {
-  const [isUpdate, setIsUpdate] = useState("latest");
+  const [isUpdate, setIsUpdate] = useState("unknown");
 
   const [isWorking, setIsWorking] = useState(false);
 
