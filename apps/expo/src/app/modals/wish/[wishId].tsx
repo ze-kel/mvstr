@@ -118,7 +118,10 @@ const WishEditor = ({ initial, handleSave }: WishEditorProps) => {
   }>();
 
   return (
-    <KeyboardAwareScrollView className="rounded-[28px] bg-surface-inverse px-4">
+    <KeyboardAwareScrollView
+      keyboardShouldPersistTaps="handled"
+      className="rounded-[28px] bg-surface-inverse px-4"
+    >
       <View className="pb-4 pt-7">
         <Text className="headingS text-center">
           {wishId !== "create" ? "Изменить желание" : "Добавить желание"}

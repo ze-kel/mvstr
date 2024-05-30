@@ -187,7 +187,7 @@ export const EventEditor = ({
   );
 
   return (
-    <KeyboardAwareScrollView>
+    <KeyboardAwareScrollView keyboardShouldPersistTaps="handled">
       <View className="pb-8">
         <View className="px-4">
           <Text className="subHeadingL mb-3 mt-5">Выберите изображение</Text>

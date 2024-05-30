@@ -123,7 +123,10 @@ const RegisterWithToken = () => {
   return (
     <View className="flex h-full w-full ">
       <View className="mx-4 rounded-[20px] bg-surface-inverse ">
-        <KeyboardAwareScrollView className="px-5 py-7">
+        <KeyboardAwareScrollView
+          keyboardShouldPersistTaps="handled"
+          className="px-5 py-7"
+        >
           <Text className="headingL text-center text-[24px] leading-[28px]">
             Регистрация
           </Text>

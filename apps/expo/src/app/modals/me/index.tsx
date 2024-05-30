@@ -89,7 +89,10 @@ export default function Index() {
       <Text className="textXXL mb-5 mt-1.5 text-center">
         {maskDBNumber(data.phone || "")}
       </Text>
-      <KeyboardAwareScrollView className="px-4">
+      <KeyboardAwareScrollView
+        keyboardShouldPersistTaps="handled"
+        className="px-4"
+      >
         <UserDataForm
           initial={{
             firstName: data.firstName || "",

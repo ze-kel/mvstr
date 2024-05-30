@@ -124,13 +124,21 @@ export default function Index() {
   const [searchQ, setSearchQ] = useState("");
 
   const filtered = useMemo(() => {
-    return (
+    const filtered =
       data?.filter((v) => {
         const { firstName, lastName } = getBaseUserInfo(v);
 
         return firstName.includes(searchQ) || lastName.includes(searchQ);
-      }) || []
-    );
+      }) || [];
+
+    return filtered.sort((a, b) => {
+      const an = getBaseUserInfo(a);
+      const bn = getBaseUserInfo(b);
+
+      return (an.firstName + an.lastName).localeCompare(
+        bn.firstName + bn.lastName,
+      );
+    });
   }, [data, searchQ]);
 
   const [allowSpiiner, setAllowSpinner] = useState(false);

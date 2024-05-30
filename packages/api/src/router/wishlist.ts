@@ -23,6 +23,7 @@ export const wishRouter = {
   getAllWishes: protectedProcedure.query(({ ctx }) => {
     return ctx.db.query.wishTable.findMany({
       where: eq(schema.wishTable.userId, ctx.user.id),
+      orderBy: [schema.wishTable.title],
     });
   }),
 
