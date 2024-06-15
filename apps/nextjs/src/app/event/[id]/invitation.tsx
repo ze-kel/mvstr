@@ -364,7 +364,9 @@ export const EventUi = ({ id }: { id: string }) => {
             {declOfNum(data.guests.length, ["человек", "человека", "человек"])}
           </div>
         </div>
-        <div className="textXXL mt-2.5 text-white">{data.description}</div>
+        <div className="textXXL mt-2.5 whitespace-pre-wrap text-white">
+          {data.description}
+        </div>
 
         <div className="mt-4 flex min-h-12 w-full flex-col justify-between gap-4 rounded-2xl bg-[#5D41E7] px-4 py-5">
           <div className="headingXS text-white">Место</div>
