@@ -68,7 +68,11 @@ export const UserAvatar = ({
       ? DefaultGirl
       : DefaultBoy;
 
-  return <Image className={className} src={src} alt="" />;
+  return <img src={src} className={className} />;
+
+  return (
+    <Image width={400} height={400} className={className} src={src} alt="" />
+  );
 };
 const Logo = () => {
   return (
@@ -335,18 +339,18 @@ export const EventUi = ({ id }: { id: string }) => {
         <div className="rouded-[32px] relative mt-4 max-w-[360px] overflow-hidden">
           <UserAvatar
             className="w-full rounded-3xl"
-            user={data?.user as IUser}
+            user={data.user as IUser}
           />
 
           <div className="grad1 absolute bottom-0 left-0 h-32 w-full"></div>
           <div className="headingMShriknking absolute bottom-4 px-4 text-white">
             <span className="relative">
               <span className="relative z-10 inline-block text-buttons-primary">
-                {data?.user.firstName}
+                {data.user.firstName}
               </span>
               <span className=" absolute left-1/2 top-1/2 z-0 h-[130%] w-[110%] -translate-x-1/2 -translate-y-[55%] rotate-[-1deg]  rounded-md bg-white"></span>
             </span>{" "}
-            приглашает тебя на {data?.name}
+            приглашает тебя на {data.name}
           </div>
         </div>
 
