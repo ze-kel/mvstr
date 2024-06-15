@@ -90,7 +90,7 @@ export const eventsRouter = {
       return await ctx.db
         .update(schema.wishConnectionsTable)
         .set({ status: input.status })
-        .where(eq(schema.wishConnectionsTable.id, input.id));
+        .where(eq(schema.wishConnectionsTable.wishId, input.id));
     }),
 
   setGuestStatusPublic: publicProcedure

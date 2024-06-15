@@ -63,7 +63,7 @@ export const UserAvatar = ({
   const g = user.registered ? user.gender : gender;
 
   const src = user.profileImage
-    ? defaultUserPics[user.profileImage] || user.profileImage
+    ? defaultUserPics[user.profileImage]?.src || user.profileImage
     : g === "female"
       ? DefaultGirl
       : DefaultBoy;
@@ -145,7 +145,7 @@ const WishItem = ({ wish }: { wish: IWish }) => {
         <div>{image}</div>
       )}
 
-      <div className="subHeadingM mt-2">{wish.title}</div>
+      <div className="subHeadingM mt-2 truncate">{wish.title}</div>
       <div className="textL mt-1">{formatPrice(wish.price)}</div>
       <div className="textL mt-2 opacity-80">{wish.description}</div>
     </div>
@@ -156,6 +156,7 @@ export const Wishlist = ({ id }: { id: string }) => {
   const { data, isLoading, refetch } = api.events.getWishesPublic.useQuery(id);
 
   const [changed, setChanged] = useState<string[]>([]);
+  console.log(changed);
 
   useEffect(() => {
     const res = localStorage.getItem("changed_wishes");
@@ -172,16 +173,18 @@ export const Wishlist = ({ id }: { id: string }) => {
   const m = api.events.setStatusPublic.useMutation();
 
   const setStatusHandler = async (id: string, status: string) => {
-    await m.mutateAsync({ status, id });
-
-    refetch();
-
     if (!changed.includes(id)) {
       const newChanged = [...changed, id];
 
       setChanged(newChanged);
       localStorage.setItem("changed_wishes", JSON.stringify(newChanged));
+    } else {
+      localStorage.setItem("changed_wishes", JSON.stringify(changed));
     }
+
+    await m.mutateAsync({ status, id });
+
+    refetch();
   };
 
   if (isLoading || !data) return <div> </div>;
@@ -198,7 +201,7 @@ export const Wishlist = ({ id }: { id: string }) => {
           if (!v.wish) return null;
 
           const isBooked = v.status === "taken";
-          const canChange = !isBooked || changed.includes(v.id);
+          const canChange = !isBooked || changed.includes(v.wishId || "none");
 
           return (
             <div key={v.id} className="flex flex-col justify-between ">
@@ -210,14 +213,17 @@ export const Wishlist = ({ id }: { id: string }) => {
                 className="mt-2.5 w-full"
                 onClick={() => {
                   if (canChange) {
-                    setStatusHandler(v.id, isBooked ? "free" : "taken");
+                    setStatusHandler(
+                      v.wishId || "",
+                      isBooked ? "free" : "taken",
+                    );
                   }
                 }}
               >
                 {isBooked
                   ? canChange
                     ? "Снять бронь"
-                    : "Забронированно"
+                    : "Забронировано"
                   : "Забронировать"}
               </Button>
             </div>

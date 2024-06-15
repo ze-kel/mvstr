@@ -51,6 +51,11 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
               aspectRatio: 1,
             }}
           />
+          {wish.status === "taken" && (
+            <View className=" absolute bottom-2.5 left-2.5 rounded-xl bg-buttons-secondary px-2 py-1">
+              <Text className="textL text-text-accent">Забронировано</Text>
+            </View>
+          )}
         </View>
 
         <Text className="captionXL mt-2 w-full" numberOfLines={1}>

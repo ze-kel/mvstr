@@ -16,14 +16,26 @@ const zNewWish = createInsertSchema(schema.wishTable, {
   userId: z.undefined(),
 });
 
-export type IWish = z.infer<typeof ZWish>;
+export type IWish = z.infer<typeof ZWish> & { status?: string };
 export type INewWish = z.infer<typeof zNewWish>;
 
 export const wishRouter = {
-  getAllWishes: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.query.wishTable.findMany({
+  getAllWishes: protectedProcedure.query(async ({ ctx }) => {
+    const taken = await ctx.db.query.wishConnectionsTable.findMany();
+
+    const map = new Set(
+      taken
+        .filter((v) => v.status === "taken")
+        .map((v) => v.wishId) as string[],
+    );
+
+    const res = await ctx.db.query.wishTable.findMany({
       where: eq(schema.wishTable.userId, ctx.user.id),
       orderBy: [schema.wishTable.title],
+    });
+
+    return res.map((v) => {
+      return { ...v, status: map.has(v.id) ? "taken" : undefined };
     });
   }),
 

@@ -117,12 +117,19 @@ const WishEditor = ({ initial, handleSave }: WishEditorProps) => {
     wishId: string;
   }>();
 
+  const statusMut = api.events.setStatusPublic.useMutation();
+
+  const [isLoadingStatus, setIsLoadingStatus] = useState(false);
+  const [statusChanged, setStatusChanged] = useState(false);
+
+  const utils = api.useUtils();
+
   return (
     <KeyboardAwareScrollView
       keyboardShouldPersistTaps="handled"
       className="rounded-[28px] bg-surface-inverse px-4"
     >
-      <View className="pb-4 pt-7">
+      <View className="pb-8 pt-7">
         <Text className="headingS text-center">
           {wishId !== "create" ? "Изменить желание" : "Добавить желание"}
         </Text>
@@ -168,6 +175,7 @@ const WishEditor = ({ initial, handleSave }: WishEditorProps) => {
           className="mt-3 h-32"
           placeholder="Какой то дополнительный комментарий"
         />
+
         <Button
           className="mt-6"
           loading={isLoading}
@@ -179,6 +187,35 @@ const WishEditor = ({ initial, handleSave }: WishEditorProps) => {
         >
           Сохранить
         </Button>
+
+        {wish.current.status === "taken" && (
+          <>
+            <View className="mx-4 mt-5 h-0.5 rounded-lg bg-icons-tertiary opacity-10"></View>
+            <View className="mt-5">
+              <Text className="subHeadingM text-center">
+                Кто то уже забронировал это желание
+              </Text>
+              <Button
+                variant={"stroke"}
+                className="mt-5"
+                disabled={statusChanged}
+                loading={isLoadingStatus}
+                onPress={async () => {
+                  setIsLoadingStatus(true);
+                  await statusMut.mutateAsync({
+                    id: wish.current.id || "",
+                    status: "free",
+                  });
+                  setIsLoadingStatus(false);
+                  setStatusChanged(true);
+                  await utils.wish.getAllWishes.invalidate();
+                }}
+              >
+                {statusChanged ? "Вы обнулили бронь" : "Обнулить бронь"}
+              </Button>
+            </View>
+          </>
+        )}
       </View>
     </KeyboardAwareScrollView>
   );
