@@ -37,26 +37,26 @@ export const WishItem = ({ wish }: { wish: IWish }) => {
       }}
     >
       <Pressable
-        className="flex w-fit flex-col items-center  px-4"
+        className="items-center px-4"
         style={{ maxWidth: Dimensions.get("window").width / 2, flex: 0.5 }}
       >
-        <View className="">
-          <View className="flex w-full overflow-hidden rounded-[20px]">
-            <Image
-              onLoadStart={() => setIsWaiting(true)}
-              onLoadEnd={() => setIsWaiting(false)}
-              source={wish.image || BlankImage}
-              style={{
-                flex: 1,
-                width: Dimensions.get("window").width / 2 - 24,
-                aspectRatio: 1,
-              }}
-            />
-          </View>
-
-          <Text className="captionXL mt-2 w-full">{wish.title}</Text>
-          <Text className="textM mt-0.5 w-full">{formatPrice(wish.price)}</Text>
+        <View className="flex w-full overflow-hidden rounded-[20px]">
+          <Image
+            onLoadStart={() => setIsWaiting(true)}
+            onLoadEnd={() => setIsWaiting(false)}
+            source={wish.image || BlankImage}
+            style={{
+              flex: 1,
+              width: Dimensions.get("window").width / 2 - 24,
+              aspectRatio: 1,
+            }}
+          />
         </View>
+
+        <Text className="captionXL mt-2 w-full" numberOfLines={1}>
+          {wish.title}
+        </Text>
+        <Text className="textM mt-0.5 w-full">{formatPrice(wish.price)}</Text>
       </Pressable>
     </Link>
   );

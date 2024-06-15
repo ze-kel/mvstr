@@ -75,7 +75,7 @@ const ReminderView = ({ event }: { event: IEventBase }) => {
           <Text className="subHeadingL">Рассылка запланирована</Text>
           <Text className="textXL">
             Приглашения будут отправлены{" "}
-            {format(event.reminder as Date, "dd MMMM в HH:mm")}
+            {format(event.reminder, "dd MMMM в HH:mm")}
           </Text>
           <Link
             href={{
@@ -208,6 +208,7 @@ const EventPage = () => {
   };
 
   const toDate = differenceInDays(data.date, new Date());
+  const toDateAbs = Math.abs(toDate);
 
   return (
     <>
@@ -220,12 +221,12 @@ const EventPage = () => {
           {toDate === 0 && <>Сегодня</>}
           {toDate > 0 && (
             <>
-              Через {toDate} {declOfNum(toDate, ["день", "дня", "дней"])}
+              Через {toDateAbs} {declOfNum(toDateAbs, ["день", "дня", "дней"])}
             </>
           )}
           {toDate < 0 && (
             <>
-              {toDate} {declOfNum(toDate, ["день", "дня", "дней"])} назад
+              {toDateAbs} {declOfNum(toDateAbs, ["день", "дня", "дней"])} назад
             </>
           )}
         </Text>

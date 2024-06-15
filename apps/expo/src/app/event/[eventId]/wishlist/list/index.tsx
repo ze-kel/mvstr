@@ -67,8 +67,8 @@ export const SelectWishItem = ({ wish }: { wish: IWish }) => {
         params: { eventId: eventId, wishId: wish.id },
       }}
     >
-      <Pressable className="flex w-fit flex-row items-center  justify-between px-4 py-2">
-        <View className="flex flex-row gap-4">
+      <Pressable className="flex flex-row  items-center justify-between gap-4 truncate px-4 py-2">
+        <View className="flex flex-1 flex-row gap-4 truncate">
           <View className="flex h-[50px] w-[50px]  overflow-hidden rounded-[10px]">
             <Image
               source={wish.image || BlankImage}
@@ -90,6 +90,7 @@ export const SelectWishItem = ({ wish }: { wish: IWish }) => {
         </View>
 
         <Button
+          className="flex-shrink-0"
           onPress={handler}
           size={"s"}
           variant={included ? "primary" : "stroke"}
