@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Contacts from "expo-contacts";
 
 import type { ToAdd } from "~/app/modals/guest/[guestId]";
 import { Button } from "~/app/_components/button";
+import { Input } from "~/app/_components/input";
 import { EmptyList } from "~/app/_components/layoutElements";
 import { regexNonNumbers } from "~/app/login/phone";
 
@@ -112,34 +113,64 @@ export const ContactList = ({
     void gs();
   }, []);
 
+  const [searchQ, setSearchQ] = useState("");
+
+  const sortedList = useMemo(() => {
+    const filtered = searchQ
+      ? list.filter((v) => {
+          return (
+            v.firstName?.includes(searchQ) || v.lastName?.includes(searchQ)
+          );
+        })
+      : list;
+
+    return filtered.sort((a, b) => {
+      const last = (a.lastName || "").localeCompare(b.lastName || "");
+
+      return last === 0
+        ? (a.firstName || "").localeCompare(b.firstName || "")
+        : last;
+    });
+  }, [list, searchQ]);
+
   return (
-    <FlatList
-      data={list}
-      refreshControl={
-        <RefreshControl
-          refreshing={isLoading}
-          onRefresh={async () => {
-            await gs();
-          }}
+    <>
+      <View className="ob mx-4">
+        <Input
+          value={searchQ}
+          onChangeText={setSearchQ}
+          placeholder="Поиск"
+          className="py-2"
         />
-      }
-      ListFooterComponent={<SafeAreaView edges={["bottom"]} />}
-      ListEmptyComponent={
-        <EmptyList
-          text={"Нет контактов"}
-          subtext={
-            "Либо ваш список контактов пуст, либо у нас нет к ним доступа"
-          }
-        />
-      }
-      keyExtractor={(item) => item.name + item.id}
-      renderItem={(v) => (
-        <ConctactItem
-          included={included}
-          addHandler={addHandler}
-          item={v.item}
-        />
-      )}
-    ></FlatList>
+      </View>
+      <FlatList
+        data={sortedList}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={async () => {
+              await gs();
+            }}
+          />
+        }
+        ListFooterComponent={<SafeAreaView edges={["bottom"]} />}
+        ListEmptyComponent={
+          <EmptyList
+            text={"Нет контактов"}
+            subtext={
+              "Либо ваш список контактов пуст, либо у нас нет к ним доступа"
+            }
+          />
+        }
+        keyExtractor={(item) => item.name + item.id}
+        renderItem={(v) => (
+          <ConctactItem
+            included={included}
+            addHandler={addHandler}
+            item={v.item}
+          />
+        )}
+      ></FlatList>
+    </>
   );
 };

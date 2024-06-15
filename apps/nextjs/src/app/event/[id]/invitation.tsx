@@ -122,9 +122,9 @@ const WishItem = ({ wish }: { wish: IWish }) => {
   );
 
   return (
-    <div className="">
+    <div className="relative">
       {wish.link ? (
-        <a href={wish.link} className="relative" target="_blank">
+        <a href={wish.link} target="_blank">
           {image}
           <div className="absolute right-2.5 top-2.5 z-10 rounded-lg bg-surface-inverse p-1.5">
             <svg
@@ -147,6 +147,7 @@ const WishItem = ({ wish }: { wish: IWish }) => {
 
       <div className="subHeadingM mt-2">{wish.title}</div>
       <div className="textL mt-1">{formatPrice(wish.price)}</div>
+      <div className="textL mt-2 opacity-80">{wish.description}</div>
     </div>
   );
 };
@@ -192,7 +193,7 @@ export const Wishlist = ({ id }: { id: string }) => {
   return (
     <>
       <div className="headingM mb-4">Выбери подарок</div>
-      <div className="grid w-fit grid-cols-2 gap-x-3 gap-y-4  ">
+      <div className="grid w-fit  grid-cols-2 gap-x-3 gap-y-4  ">
         {sorted.map((v) => {
           if (!v.wish) return null;
 
@@ -200,7 +201,7 @@ export const Wishlist = ({ id }: { id: string }) => {
           const canChange = !isBooked || changed.includes(v.id);
 
           return (
-            <div key={v.id}>
+            <div key={v.id} className="flex flex-col justify-between ">
               <WishItem wish={v.wish} />
               <Button
                 disabled={!canChange}
